@@ -8,8 +8,6 @@ Cloud Computing and Virtualization 2019-2020, 2nd semester project
 
 [Terraform](https://www.terraform.io/)
 
-Terraform
-
 ## How to run
 
 ### AWS - Setup Credentials
@@ -45,13 +43,13 @@ Terraform
 
       terraform plan
 
-  For the next step, you will be asked to provide the name of an existing AWS ssh key pair name
+- Deploy resources
+
+  For the next command, you will be asked to provide the name of an existing AWS ssh key pair
 
   If you have a **key_name.pem** file, then the value should be **key_name**
 
-  It is recommended to export environment variable **TF_VAR_ssh-key-pair-name=key_name**
-
-- Deploy resources
+  It is recommended to export environment variable **TF_VAR_ssh_key_pair_name=key_name**
 
       terraform apply
 
