@@ -3,8 +3,7 @@
         "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
         "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
         "region": "us-east-1",
-        "ssh_username": "ec2-user",
-        "base_ami": "ami-0fc61db8544a617ed"
+        "ssh_username": "ec2-user"
     },
     "builders": [
         {
@@ -15,10 +14,21 @@
             "source_ami": "{{user `base_ami`}}",
             "instance_type": "t2.micro",
             "ssh_username": "{{user `ssh_username`}}",
-            "ami_name": "packer-cnv-project-webserver",
+            "ami_name": "packer-cnv-project-webserver-{{timestamp}}",
             "associate_public_ip_address": true,
             "tags": {
                 "Name": "Packer-CNV-Webserver"
+            },
+            "source_ami_filter": {
+                "filters": {
+                    "virtualization-type": "hvm",
+                    "name": "packer-cnv-project-jdk-1.7-*",
+                    "root-device-type": "ebs"
+                },
+                "owners": [
+                    "self"
+                ],
+                "most_recent": true
             }
         }
     ],
@@ -27,6 +37,11 @@
             "type": "file",
             "source": "../webserver",
             "destination": "$HOME/webserver"
+        },
+        {
+            "type": "file",
+            "source": "../instrumentation",
+            "destination": "$HOME/instrumentation"
         },
         {
             "type": "shell",

@@ -23,15 +23,22 @@ Cloud Computing and Virtualization 2019-2020, 2nd semester project
       export AWS_ACCESS_KEY_ID="key-id"
       export AWS_SECRET_ACCESS_KEY="key-secret"
 
+- You may also configure the credentials profile to use by setting the AWS_PROFILE environment variable:
+
+      export AWS_PROFILE="profile"
+
 ### Packer - Building Images
 
-- Validate packer ami configuration file: (Only necessary for developers)
+- Validate packer ami configuration file: (Mostly for developers)
 
-      packer validate ami-webserver.json
+      packer validate ami-<module>.json
 
 - Create the AWS AMI's using Packer:
 
+      packer build ami-jdk.json
       packer build ami-webserver.json
+      packer build ami-scaler.json
+      packer build ami-balancer.json
 
 ### Terraform - Deploying the Infrastructure
 
