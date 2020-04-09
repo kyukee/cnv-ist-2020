@@ -1,5 +1,4 @@
 
-
 import java.io.*;
 import java.util.*;
 import BIT.highBIT.*;
@@ -7,7 +6,7 @@ import BIT.lowBIT.*;
 
 public class AnalyzeMethods {
 	public static double grand_total = 0;
-        public static final String usage = "Usage: java AnalyzeMethods ." 
+        public static final String usage = "Usage: java AnalyzeMethods ."
 	    + "\nThis program finds all of the class files in this directory and prints out the"
 	    + "\nname of all of the methods in each and the access_flags of the method to stderr.\n";
 
@@ -21,7 +20,7 @@ public class AnalyzeMethods {
 	      	File file_in = new File(args[0]);
 		String tmppath = new String(file_in.getAbsolutePath());
                 String p = new String(tmppath.substring(0, tmppath.length() - 2));
-		processFiles(file_in, p); 
+		processFiles(file_in, p);
 
 	   } catch (Exception e) {
       		System.err.println("Exception! in main method: " + e);
@@ -46,7 +45,7 @@ public class AnalyzeMethods {
 								//processFiles(file_tmp, tmppath);
 
 			} else { /* see if this is a class file and if so, process it */
-			
+
 			  	String name = new String(tmppath + "/" + ifnames[i]);
 
         		  	if (name.endsWith(".class")) {
@@ -56,20 +55,20 @@ public class AnalyzeMethods {
 					/* BIT/lowBIT/ClassFile */
 					ClassFile cf = ci.getClassFile(); /* returns the class file in the BIT representation*/
 
-					short super_class_index = cf.getSuperClassIndex(); 
+					short super_class_index = cf.getSuperClassIndex();
 
 					/* Type Cp_Info can be found in BIT/lowBIT/Cp_Info */
 					Cp_Info[] cpool = ci.getConstantPool(); /* ci is type BIT/highBIT/ClassInfo */
 
-					/* 
-					 * get the element in the constant pool at super_class_index 
+					/*
+					 * get the element in the constant pool at super_class_index
 					 * its type is BIT/lowBIT/CONSTANT_Class_Info
 					 */
 					CONSTANT_Class_Info tmp_class_info = (CONSTANT_Class_Info) cpool[super_class_index];
 					/* get the name index from the CONSTANT_Class_Info element */
 					int name_index = tmp_class_info.name_index;
 
-					/* 
+					/*
 					 * get the element in the constant pool at name_index
 					 * its type is BIT/lowBIT/CONSTANT_Utf8_Info
 					 */
@@ -89,9 +88,9 @@ public class AnalyzeMethods {
 					    Routine routine = (Routine) e.nextElement(); /* nextElement returns type Object
 											  * hence, we need the cast */
 					    /* see BIT/highBIT/Routine for all the ways to manipulate a routine */
-					    
-					    System.err.println("class: " + routine.getClassName() + " method: " 
-						+ routine.getMethodName() 
+
+					    System.err.println("class: " + routine.getClassName() + " method: "
+						+ routine.getMethodName()
 						+ " type: " + routine.getDescriptor());
 
 					    /* see BIT/lowBIT/Method_Info */
@@ -111,4 +110,4 @@ public class AnalyzeMethods {
 	   }
 	}
 }
-		
+

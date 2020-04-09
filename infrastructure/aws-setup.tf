@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 variable "ssh_key_pair_name" {
-    description = "The name of the key you will use for ssh access. If you have a <key_name.pem> file, then the value should be <key_name>"
+    description = "The name of the key you will use for ssh access. If you have a <key_name.pem> file, then the value should be <key_name> \nIt is recommended to export environment variable TF_VAR_ssh_key_pair_name=key_name"
 }
 
 resource "aws_instance" "webserver-instance" {

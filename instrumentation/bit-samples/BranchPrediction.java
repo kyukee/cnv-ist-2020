@@ -1,3 +1,4 @@
+
 import BIT.highBIT.*;
 import BIT.lowBIT.*;
 import java.io.File;
@@ -13,7 +14,7 @@ class Branch {
 public class BranchPrediction {
 	static Hashtable branch = null;
 	static int pc = 0;
-	
+
 	public static void main(String argv[]) {
 		String infilename = new String(argv[0]);
 		String outfilename = new String(argv[1]);
@@ -44,7 +45,7 @@ public class BranchPrediction {
 		System.out.println("method: " + s);
 		branch = new Hashtable();
 	}
-	
+
 	public static void LeaveMethod(String s) {
 		System.out.println("stat for method: " + s);
 		for (Enumeration e = branch.keys(); e.hasMoreElements(); ) {

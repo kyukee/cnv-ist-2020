@@ -8,25 +8,26 @@
 // ALL RIGHTS RESERVED.
 //
 // Permission to use, copy, modify, and distribute this software and its
-// documentation for non-commercial purposes is hereby granted provided 
+// documentation for non-commercial purposes is hereby granted provided
 // that this copyright notice appears in all copies.
-// 
+//
 // This software is provided "as is".  The licensor makes no warrenties, either
 // expressed or implied, about its correctness or performance.  The licensor
 // shall not be liable for any damages suffered as a result of using
 // and modifying this software.
+
 
 import BIT.highBIT.*;
 import java.io.File;
 import java.util.Enumeration;
 import java.util.Vector;
 
-public class StatisticsTool 
+public class StatisticsTool
 {
 	private static int dyn_method_count = 0;
 	private static int dyn_bb_count = 0;
 	private static int dyn_instr_count = 0;
-	
+
 	private static int newcount = 0;
 	private static int newarraycount = 0;
 	private static int anewarraycount = 0;
@@ -42,8 +43,8 @@ public class StatisticsTool
 	private static int branch_pc;
 	private static String branch_class_name;
 	private static String branch_method_name;
-		
-	public static void printUsage() 
+
+	public static void printUsage()
 		{
 			System.out.println("Syntax: java StatisticsTool -stat_type in_path [out_path]");
 			System.out.println("        where stat_type can be:");
@@ -60,14 +61,14 @@ public class StatisticsTool
 			System.exit(-1);
 		}
 
-	public static void doStatic(File in_dir) 
+	public static void doStatic(File in_dir)
 		{
 			String filelist[] = in_dir.list();
 			int method_count = 0;
 			int bb_count = 0;
 			int instr_count = 0;
 			int class_count = 0;
-			
+
 			for (int i = 0; i < filelist.length; i++) {
 				String filename = filelist[i];
 				if (filename.endsWith(".class")) {
@@ -92,18 +93,18 @@ public class StatisticsTool
 			System.out.println("Number of methods:      " + method_count);
 			System.out.println("Number of basic blocks: " + bb_count);
 			System.out.println("Number of instructions: " + instr_count);
-			
+
 			if (class_count == 0 || method_count == 0) {
 				return;
 			}
-			
+
 			float instr_per_bb = (float) instr_count / (float) bb_count;
 			float instr_per_method = (float) instr_count / (float) method_count;
 			float instr_per_class = (float) instr_count / (float) class_count;
 			float bb_per_method = (float) bb_count / (float) method_count;
 			float bb_per_class = (float) bb_count / (float) class_count;
 			float method_per_class = (float) method_count / (float) class_count;
-			
+
 			System.out.println("Average number of instructions per basic block: " + instr_per_bb);
 			System.out.println("Average number of instructions per method:      " + instr_per_method);
 			System.out.println("Average number of instructions per class:       " + instr_per_class);
@@ -112,10 +113,10 @@ public class StatisticsTool
 			System.out.println("Average number of methods per class:            " + method_per_class);
 		}
 
-	public static void doDynamic(File in_dir, File out_dir) 
+	public static void doDynamic(File in_dir, File out_dir)
 		{
 			String filelist[] = in_dir.list();
-			
+
 			for (int i = 0; i < filelist.length; i++) {
 				String filename = filelist[i];
 				if (filename.endsWith(".class")) {
@@ -125,7 +126,7 @@ public class StatisticsTool
 					for (Enumeration e = ci.getRoutines().elements(); e.hasMoreElements(); ) {
 						Routine routine = (Routine) e.nextElement();
 						routine.addBefore("StatisticsTool", "dynMethodCount", new Integer(1));
-                    
+
 						for (Enumeration b = routine.getBasicBlocks().elements(); b.hasMoreElements(); ) {
 							BasicBlock bb = (BasicBlock) b.nextElement();
 							bb.addBefore("StatisticsTool", "dynInstrCount", new Integer(bb.size()));
@@ -136,43 +137,43 @@ public class StatisticsTool
 				}
 			}
 		}
-	
-    public static synchronized void printDynamic(String foo) 
+
+    public static synchronized void printDynamic(String foo)
 		{
 			System.out.println("Dynamic information summary:");
 			System.out.println("Number of methods:      " + dyn_method_count);
 			System.out.println("Number of basic blocks: " + dyn_bb_count);
 			System.out.println("Number of instructions: " + dyn_instr_count);
-		
+
 			if (dyn_method_count == 0) {
 				return;
 			}
-		
+
 			float instr_per_bb = (float) dyn_instr_count / (float) dyn_bb_count;
 			float instr_per_method = (float) dyn_instr_count / (float) dyn_method_count;
 			float bb_per_method = (float) dyn_bb_count / (float) dyn_method_count;
-		
+
 			System.out.println("Average number of instructions per basic block: " + instr_per_bb);
 			System.out.println("Average number of instructions per method:      " + instr_per_method);
 			System.out.println("Average number of basic blocks per method:      " + bb_per_method);
 		}
-    
 
-    public static synchronized void dynInstrCount(int incr) 
+
+    public static synchronized void dynInstrCount(int incr)
 		{
 			dyn_instr_count += incr;
 			dyn_bb_count++;
 		}
 
-    public static synchronized void dynMethodCount(int incr) 
+    public static synchronized void dynMethodCount(int incr)
 		{
 			dyn_method_count++;
 		}
-	
-	public static void doAlloc(File in_dir, File out_dir) 
+
+	public static void doAlloc(File in_dir, File out_dir)
 		{
 			String filelist[] = in_dir.list();
-			
+
 			for (int i = 0; i < filelist.length; i++) {
 				String filename = filelist[i];
 				if (filename.endsWith(".class")) {
@@ -183,7 +184,7 @@ public class StatisticsTool
 					for (Enumeration e = ci.getRoutines().elements(); e.hasMoreElements(); ) {
 						Routine routine = (Routine) e.nextElement();
 						InstructionArray instructions = routine.getInstructionArray();
-		  
+
 						for (Enumeration instrs = instructions.elements(); instrs.hasMoreElements(); ) {
 							Instruction instr = (Instruction) instrs.nextElement();
 							int opcode=instr.getOpcode();
@@ -201,7 +202,7 @@ public class StatisticsTool
 			}
 		}
 
-	public static synchronized void printAlloc(String s) 
+	public static synchronized void printAlloc(String s)
 		{
 			System.out.println("Allocations summary:");
 			System.out.println("new:            " + newcount);
@@ -227,11 +228,11 @@ public class StatisticsTool
 				break;
 			}
 		}
-	
-	public static void doLoadStore(File in_dir, File out_dir) 
+
+	public static void doLoadStore(File in_dir, File out_dir)
 		{
 			String filelist[] = in_dir.list();
-			
+
 			for (int i = 0; i < filelist.length; i++) {
 				String filename = filelist[i];
 				if (filename.endsWith(".class")) {
@@ -241,7 +242,7 @@ public class StatisticsTool
 
 					for (Enumeration e = ci.getRoutines().elements(); e.hasMoreElements(); ) {
 						Routine routine = (Routine) e.nextElement();
-						
+
 						for (Enumeration instrs = (routine.getInstructionArray()).elements(); instrs.hasMoreElements(); ) {
 							Instruction instr = (Instruction) instrs.nextElement();
 							int opcode=instr.getOpcode();
@@ -263,10 +264,10 @@ public class StatisticsTool
 					ci.addAfter("StatisticsTool", "printLoadStore", "null");
 					ci.write(out_filename);
 				}
-			}	
+			}
 		}
 
-	public static synchronized void printLoadStore(String s) 
+	public static synchronized void printLoadStore(String s)
 		{
 			System.out.println("Load Store Summary:");
 			System.out.println("Field load:    " + fieldloadcount);
@@ -275,7 +276,7 @@ public class StatisticsTool
 			System.out.println("Regular store: " + storecount);
 		}
 
-	public static synchronized void LSFieldCount(int type) 
+	public static synchronized void LSFieldCount(int type)
 		{
 			if (type == 0)
 				fieldloadcount++;
@@ -283,20 +284,20 @@ public class StatisticsTool
 				fieldstorecount++;
 		}
 
-	public static synchronized void LSCount(int type) 
+	public static synchronized void LSCount(int type)
 		{
 			if (type == 0)
 				loadcount++;
 			else
 				storecount++;
 		}
-	
-	public static void doBranch(File in_dir, File out_dir) 
+
+	public static void doBranch(File in_dir, File out_dir)
 		{
 			String filelist[] = in_dir.list();
 			int k = 0;
 			int total = 0;
-			
+
 			for (int i = 0; i < filelist.length; i++) {
 				String filename = filelist[i];
 				if (filename.endsWith(".class")) {
@@ -317,7 +318,7 @@ public class StatisticsTool
 					}
 				}
 			}
-			
+
 			for (int i = 0; i < filelist.length; i++) {
 				String filename = filelist[i];
 				if (filename.endsWith(".class")) {
@@ -346,7 +347,7 @@ public class StatisticsTool
 					ci.addAfter("StatisticsTool", "printBranch", "null");
 					ci.write(out_filename);
 				}
-			}	
+			}
 		}
 
 	public static synchronized void setBranchClassName(String name)
@@ -354,17 +355,17 @@ public class StatisticsTool
 			branch_class_name = name;
 		}
 
-	public static synchronized void setBranchMethodName(String name) 
+	public static synchronized void setBranchMethodName(String name)
 		{
 			branch_method_name = name;
 		}
-	
+
 	public static synchronized void setBranchPC(int pc)
 		{
 			branch_pc = pc;
 		}
-	
-	public static synchronized void branchInit(int n) 
+
+	public static synchronized void branchInit(int n)
 		{
 			if (branch_info == null) {
 				branch_info = new StatisticsBranch[n];
@@ -374,7 +375,7 @@ public class StatisticsTool
 	public static synchronized void updateBranchNumber(int n)
 		{
 			branch_number = n;
-			
+
 			if (branch_info[branch_number] == null) {
 				branch_info[branch_number] = new StatisticsBranch(branch_class_name, branch_method_name, branch_pc);
 			}
@@ -394,16 +395,16 @@ public class StatisticsTool
 		{
 			System.out.println("Branch summary:");
 			System.out.println("CLASS NAME" + '\t' + "METHOD" + '\t' + "PC" + '\t' + "TAKEN" + '\t' + "NOT_TAKEN");
-			
+
 			for (int i = 0; i < branch_info.length; i++) {
 				if (branch_info[i] != null) {
 					branch_info[i].print();
 				}
 			}
 		}
-	
-			
-	public static void main(String argv[]) 
+
+
+	public static void main(String argv[])
 		{
 			if (argv.length < 2 || !argv[0].startsWith("-")) {
 				printUsage();
@@ -413,10 +414,10 @@ public class StatisticsTool
 				if (argv.length != 2) {
 					printUsage();
 				}
-				
+
 				try {
 					File in_dir = new File(argv[1]);
-					
+
 					if (in_dir.isDirectory()) {
 						doStatic(in_dir);
 					}
@@ -433,7 +434,7 @@ public class StatisticsTool
 				if (argv.length != 3) {
 					printUsage();
 				}
-				
+
 				try {
 					File in_dir = new File(argv[1]);
 					File out_dir = new File(argv[2]);
@@ -449,12 +450,12 @@ public class StatisticsTool
 					printUsage();
 				}
 			}
-			
+
 			else if (argv[0].equals("-alloc")) {
 				if (argv.length != 3) {
 					printUsage();
 				}
-				
+
 				try {
 					File in_dir = new File(argv[1]);
 					File out_dir = new File(argv[2]);
@@ -470,12 +471,12 @@ public class StatisticsTool
 					printUsage();
 				}
 			}
-			
+
 			else if (argv[0].equals("-load_store")) {
 				if (argv.length != 3) {
 					printUsage();
 				}
-				
+
 				try {
 					File in_dir = new File(argv[1]);
 					File out_dir = new File(argv[2]);
@@ -496,7 +497,7 @@ public class StatisticsTool
 				if (argv.length != 3) {
 					printUsage();
 				}
-				
+
 				try {
 					File in_dir = new File(argv[1]);
 					File out_dir = new File(argv[2]);

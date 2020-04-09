@@ -1,3 +1,4 @@
+
 import java.io.*;
 import java.util.*;
 import BIT.highBIT.*;
@@ -12,7 +13,7 @@ public class GetStatsOfClassesExecuted {
 	public static double bytecodes_total = 0;
 	public static double bytecodes_partial=0;
 
-        public static final String usage = "Usage: java GetSizeOfClassesExecuted ." 
+        public static final String usage = "Usage: java GetSizeOfClassesExecuted ."
 	    + "\nThis program finds all of the class files in this directory and prints"
 	    + "\nout the size of each (as well as the grand total) to stderr.\n";
 
@@ -26,9 +27,9 @@ public class GetStatsOfClassesExecuted {
 	      	File file_in = new File(args[0]);
 		String tmppath = new String(file_in.getAbsolutePath());
                 String p = new String(tmppath.substring(0, tmppath.length() - 2));
-		processFiles(file_in, p); 
-	System.err.println("Totals: class size: " + grand_total + " const: " + const_total+ 
-							" fields: "+ field_total+ " interfaces: " + interface_total + " methods: " + methods_total + 
+		processFiles(file_in, p);
+	System.err.println("Totals: class size: " + grand_total + " const: " + const_total+
+							" fields: "+ field_total+ " interfaces: " + interface_total + " methods: " + methods_total +
 						    " bytecodes: " +  bytecodes_total);
 
 
@@ -56,7 +57,7 @@ public class GetStatsOfClassesExecuted {
 								//processFiles(file_tmp, tmppath);
 
 			} else { /* see if this is a class file and if so, process it */
-			
+
 			  	String name = new String(tmppath + "/" + ifnames[i]);
 
         		  	if (name.endsWith(".class")) {
@@ -83,8 +84,8 @@ public class GetStatsOfClassesExecuted {
 
 
 					/* getClassName is in BIT/highBIT/ClassInfo */
-					System.err.println(ci.getClassName() + " size: " + cf.size() + " const: " + cf.constant_pool_count + 
-							" fields: "+ cf.field_count+ " interfaces: " + cf.interface_count + " methods: " + cf.methods_count + 
+					System.err.println(ci.getClassName() + " size: " + cf.size() + " const: " + cf.constant_pool_count +
+							" fields: "+ cf.field_count+ " interfaces: " + cf.interface_count + " methods: " + cf.methods_count +
 						    " bytecodes: " +  bytecodes_total);
 			  	}
 			}
@@ -98,4 +99,4 @@ public class GetStatsOfClassesExecuted {
 	   }
 	}
 }
-		
+

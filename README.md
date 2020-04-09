@@ -64,11 +64,15 @@ Cloud Computing and Virtualization 2019-2020, 2nd semester project
 
 - make a request to a server
 
-      curl <server_public_dns>:8000/test
+      curl <server_public_dns>:8000/sudoku?s=<strategy>&un=<max_unassigned_entries>&n1=<puzzle_lines>&n2=<puzzle_columns>&i=<puzzle_name>
 
     example:
 
-      curl ec2-3-227-244-216.compute-1.amazonaws.com:8000/test
+      curl ec2-3-227-244-216.compute-1.amazonaws.com:8000/sudoku?...
+
+- look at the server logs
+
+      tail -f logs/server.log
 
 ## Shutdown
 
