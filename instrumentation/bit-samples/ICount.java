@@ -45,8 +45,11 @@ public class ICount {
                         BasicBlock bb = (BasicBlock) b.nextElement();
                         bb.addBefore("ICount", "count", new Integer(bb.size()));
                     }
+
+                    if (infilename.endsWith("SolverMain.class")) {
+                        routine.addAfter("ICount", "printICount", ci.getClassName());
+                    }
                 }
-                ci.addAfter("ICount", "printICount", ci.getClassName());
                 ci.write(argv[1] + System.getProperty("file.separator") + infilename);
             }
         }

@@ -130,9 +130,12 @@ public class StatisticsTool
 						for (Enumeration b = routine.getBasicBlocks().elements(); b.hasMoreElements(); ) {
 							BasicBlock bb = (BasicBlock) b.nextElement();
 							bb.addBefore("StatisticsTool", "dynInstrCount", new Integer(bb.size()));
-						}
+                        }
+
+                        if (filename.endsWith("SolverMain.class")) {
+                            routine.addAfter("StatisticsTool", "printDynamic", "null");
+                        }
 					}
-					ci.addAfter("StatisticsTool", "printDynamic", "null");
 					ci.write(out_filename);
 				}
 			}
@@ -194,9 +197,12 @@ public class StatisticsTool
 								(opcode==InstructionTable.multianewarray)) {
 								instr.addBefore("StatisticsTool", "allocCount", new Integer(opcode));
 							}
-						}
+                        }
+
+                        if (filename.endsWith("SolverMain.class")) {
+                            routine.addAfter("StatisticsTool", "printAlloc", "null");
+                        }
 					}
-					ci.addAfter("StatisticsTool", "printAlloc", "null");
 					ci.write(out_filename);
 				}
 			}
@@ -259,9 +265,12 @@ public class StatisticsTool
 									instr.addBefore("StatisticsTool", "LSCount", new Integer(1));
 								}
 							}
-						}
+                        }
+
+                        if (filename.endsWith("SolverMain.class")) {
+                            routine.addAfter("StatisticsTool", "printLoadStore", "null");
+                        }
 					}
-					ci.addAfter("StatisticsTool", "printLoadStore", "null");
 					ci.write(out_filename);
 				}
 			}
@@ -340,11 +349,14 @@ public class StatisticsTool
 								instr.addBefore("StatisticsTool", "updateBranchOutcome", "BranchOutcome");
 								k++;
 							}
-						}
+                        }
+
+                        if (filename.endsWith("SolverMain.class")) {
+                            routine.addAfter("StatisticsTool", "printBranch", "null");
+                        }
 					}
 					ci.addBefore("StatisticsTool", "setBranchClassName", ci.getClassName());
 					ci.addBefore("StatisticsTool", "branchInit", new Integer(total));
-					ci.addAfter("StatisticsTool", "printBranch", "null");
 					ci.write(out_filename);
 				}
 			}
