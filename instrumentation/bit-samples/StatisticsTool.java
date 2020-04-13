@@ -214,7 +214,8 @@ public class StatisticsTool
 			System.out.println("new:            " + newcount);
 			System.out.println("newarray:       " + newarraycount);
 			System.out.println("anewarray:      " + anewarraycount);
-			System.out.println("multianewarray: " + multianewarraycount);
+            System.out.println("multianewarray: " + multianewarraycount);
+            System.out.println("Thread id: " + Thread.currentThread().getId());
 		}
 
 	public static synchronized void allocCount(int type)
@@ -282,7 +283,8 @@ public class StatisticsTool
 			System.out.println("Field load:    " + fieldloadcount);
 			System.out.println("Field store:   " + fieldstorecount);
 			System.out.println("Regular load:  " + loadcount);
-			System.out.println("Regular store: " + storecount);
+            System.out.println("Regular store: " + storecount);
+            System.out.println("Thread id: " + Thread.currentThread().getId());
 		}
 
 	public static synchronized void LSFieldCount(int type)

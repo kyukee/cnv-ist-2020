@@ -57,6 +57,7 @@ public class ICount {
 
     public static synchronized void printICount(String foo) {
         System.out.println(i_count + " instructions in " + b_count + " basic blocks were executed in " + m_count + " methods.");
+        System.out.println("Thread id: " + Thread.currentThread().getId());
     }
 
 

@@ -51,21 +51,21 @@ public class Solver {
         strategy.setPuzzle(getBoard());
 
 
-        if(ap.isDebugging()) {
-            System.out.println(String.format("> Solving %dx%d sudoku puzzle", getN1(), getN2()));
-            System.out.println(String.format("> Strategy: %s", ap.getSolverStrategy().toString()));
-            strategy.printPuzzle();
-        }
+        // if(ap.isDebugging()) {
+        //     System.out.println(String.format("> Solving %dx%d sudoku puzzle", getN1(), getN2()));
+        //     System.out.println(String.format("> Strategy: %s", ap.getSolverStrategy().toString()));
+        //     strategy.printPuzzle();
+        // }
 
 
-        //final long startTime = System.nanoTime();
+        final long startTime = System.nanoTime();
         strategy.runSolver(this);
-        //final long elapsedTime = System.nanoTime() - startTime;
+        final long elapsedTime = System.nanoTime() - startTime;
 
-        if(ap.isDebugging()) {
-            strategy.printSolution();
-            //System.out.println(" Solution found in " + (elapsedTime*1e-6) + " ms");
-        }
+        // if(ap.isDebugging()) {
+        //     strategy.printSolution();
+            System.out.println("> Solution found in " + (elapsedTime*1e-6) + " ms with thread_id:" + Thread.currentThread().getId());
+        // }
 
         int[][] solution = strategy.getSolution();
 

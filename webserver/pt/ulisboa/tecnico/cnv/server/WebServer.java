@@ -64,7 +64,7 @@ public class WebServer {
 
 			// Get the query.
 			final String query = t.getRequestURI().getQuery();
-			System.out.println("> Query:\t" + query);
+			System.out.println("> Query:\t" + query + " with thread_id:" + Thread.currentThread().getId());
 
 			// Break it down into String[].
 			final String[] params = query.split("&");
@@ -127,7 +127,7 @@ public class WebServer {
 
 			os.close();
 
-			System.out.println("> Sent response to " + t.getRemoteAddress().toString());
+			System.out.println("> Sent response to " + t.getRemoteAddress().toString() + " with thread_id:" + Thread.currentThread().getId());
 		}
 	}
 }
