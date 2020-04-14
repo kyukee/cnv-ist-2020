@@ -158,7 +158,11 @@ public class StatisticsTool
 
 			System.out.println("Average number of instructions per basic block: " + instr_per_bb);
 			System.out.println("Average number of instructions per method:      " + instr_per_method);
-			System.out.println("Average number of basic blocks per method:      " + bb_per_method);
+            System.out.println("Average number of basic blocks per method:      " + bb_per_method);
+
+            dyn_method_count = 0;
+            dyn_bb_count = 0;
+            dyn_instr_count = 0;
 		}
 
 
@@ -216,6 +220,11 @@ public class StatisticsTool
 			System.out.println("anewarray:      " + anewarraycount);
             System.out.println("multianewarray: " + multianewarraycount);
             System.out.println("Thread id: " + Thread.currentThread().getId());
+
+            newcount = 0;
+			newarraycount = 0;
+			anewarraycount = 0;
+            multianewarraycount = 0;
 		}
 
 	public static synchronized void allocCount(int type)
@@ -285,6 +294,11 @@ public class StatisticsTool
 			System.out.println("Regular load:  " + loadcount);
             System.out.println("Regular store: " + storecount);
             System.out.println("Thread id: " + Thread.currentThread().getId());
+
+            fieldloadcount = 0;
+            fieldstorecount = 0;
+            loadcount = 0;
+            storecount = 0;
 		}
 
 	public static synchronized void LSFieldCount(int type)

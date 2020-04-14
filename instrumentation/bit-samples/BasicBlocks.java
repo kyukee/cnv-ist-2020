@@ -14,13 +14,17 @@
 
 
 import BIT.highBIT.*;
+import pt.ulisboa.tecnico.cnv.data.LocalDatabase;
+
 import java.io.*;
 import java.util.*;
+import java.math.BigInteger;
 
 
-public class ICount {
+public class BasicBlocks {
     private static PrintStream out = null;
-    private static int i_count = 0, b_count = 0, m_count = 0;
+    private static Map<Long,BigInteger> b_count = new HashMap<Long, BigInteger>();
+
 
     /* main reads in all the files class files present in the input directory,
      * instruments them, and outputs them to the specified output directory.
@@ -39,15 +43,14 @@ public class ICount {
                 // see java.util.Enumeration for more information on Enumeration class
                 for (Enumeration e = ci.getRoutines().elements(); e.hasMoreElements(); ) {
                     Routine routine = (Routine) e.nextElement();
-					routine.addBefore("ICount", "mcount", new Integer(1));
 
                     for (Enumeration b = routine.getBasicBlocks().elements(); b.hasMoreElements(); ) {
                         BasicBlock bb = (BasicBlock) b.nextElement();
-                        bb.addBefore("ICount", "count", new Integer(bb.size()));
+                        bb.addBefore("BasicBlocks", "bbCount", new Integer(1));
                     }
 
                     if (infilename.endsWith("SolverMain.class")) {
-                        routine.addAfter("ICount", "printICount", ci.getClassName());
+                        routine.addAfter("BasicBlocks", "printBasicBlocks", ci.getClassName());
                     }
                 }
                 ci.write(argv[1] + System.getProperty("file.separator") + infilename);
@@ -55,23 +58,33 @@ public class ICount {
         }
     }
 
-    public static synchronized void printICount(String foo) {
-        System.out.println(i_count + " instructions in " + b_count + " basic blocks were executed in " + m_count + " methods.");
-        System.out.println("Thread id: " + Thread.currentThread().getId());
+    private static synchronized BigInteger getBBCount(long threadID) {
+        BigInteger bb_value;
 
-        i_count = 0;
-        b_count = 0;
-        m_count = 0;
+        bb_value = b_count.get(threadID);
+
+        if (bb_value == null)
+            bb_value = new BigInteger("0");
+
+        return bb_value;
     }
 
+    public static synchronized void printBasicBlocks(String foo) {
+        long threadID = Thread.currentThread().getId();
 
-    public static synchronized void count(int incr) {
-        i_count += incr;
-        b_count++;
+        BigInteger bb_value = getBBCount(threadID);
+        LocalDatabase.setBBCount(threadID, bb_value);
+
+        b_count.put(threadID, BigInteger.valueOf(0));
     }
 
-    public static synchronized void mcount(int incr) {
-		m_count++;
+    public static synchronized void bbCount(int incr) {
+        long threadID = Thread.currentThread().getId();
+
+        BigInteger bb_value = getBBCount(threadID);
+        BigInteger bb_new_value = bb_value.add(BigInteger.valueOf(incr));
+
+        b_count.put(threadID, bb_new_value);
     }
+
 }
-

@@ -5,6 +5,8 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.json.JSONArray;
+
+import pt.ulisboa.tecnico.cnv.data.LocalDatabase;
 import pt.ulisboa.tecnico.cnv.solver.Solver;
 import pt.ulisboa.tecnico.cnv.solver.SolverArgumentParser;
 import pt.ulisboa.tecnico.cnv.solver.SolverFactory;
@@ -13,10 +15,14 @@ import pt.ulisboa.tecnico.cnv.solver.SolverMain;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 
 public class WebServer {
@@ -62,9 +68,11 @@ public class WebServer {
 		@Override
 		public void handle(final HttpExchange t) throws IOException {
 
+            long threadID = Thread.currentThread().getId();
+
 			// Get the query.
 			final String query = t.getRequestURI().getQuery();
-			System.out.println("> Query:\t" + query + " with thread_id:" + Thread.currentThread().getId());
+			System.out.println("> Query:\t" + query + " with thread_id:" + threadID);
 
 			// Break it down into String[].
 			final String[] params = query.split("&");
@@ -89,7 +97,9 @@ public class WebServer {
 				i++;
             }
 
+            final long startTime = System.nanoTime();
             JSONArray solution = SolverMain.solve(args);
+            final long elapsedTime = System.nanoTime() - startTime;
 
 			// // Get user-provided flags.
 			// final SolverArgumentParser ap = new SolverArgumentParser(args);
@@ -125,9 +135,31 @@ public class WebServer {
             osw.flush();
             osw.close();
 
-			os.close();
+            os.close();
 
-			System.out.println("> Sent response to " + t.getRemoteAddress().toString() + " with thread_id:" + Thread.currentThread().getId());
+
+            // TODO write to DynamoDB
+
+
+
+            Map<String,String> paramsMap = new HashMap<String,String>();
+
+            for (final String p : params) {
+                final String[] splitParam = p.split("=");
+                paramsMap.put(splitParam[0], splitParam[1]);
+			}
+
+            System.out.println("> params: ");
+            for (Map.Entry entry : paramsMap.entrySet()){
+                System.out.println("key: " + entry.getKey() + "; value: " + entry.getValue());
+            }
+
+            BigInteger bb_count = LocalDatabase.getBBCount(threadID);
+            System.out.println("> basic blocks: " + bb_count);
+            System.out.println("> Solution found in " + (elapsedTime*1e-6));
+            System.out.println("> threadID: " + threadID);
+
+			System.out.println("> Sent response to " + t.getRemoteAddress().toString() + " with thread_id: " + Thread.currentThread().getId() + "\n");
 		}
 	}
 }

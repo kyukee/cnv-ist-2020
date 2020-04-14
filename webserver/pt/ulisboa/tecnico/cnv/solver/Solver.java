@@ -58,13 +58,13 @@ public class Solver {
         // }
 
 
-        final long startTime = System.nanoTime();
+        // final long startTime = System.nanoTime();
         strategy.runSolver(this);
-        final long elapsedTime = System.nanoTime() - startTime;
+        // final long elapsedTime = System.nanoTime() - startTime;
 
         // if(ap.isDebugging()) {
         //     strategy.printSolution();
-            System.out.println("> Solution found in " + (elapsedTime*1e-6) + " ms with thread_id:" + Thread.currentThread().getId());
+        //     System.out.println("> Solution found in " + (elapsedTime*1e-6) + " ms with thread_id:" + Thread.currentThread().getId());
         // }
 
         int[][] solution = strategy.getSolution();

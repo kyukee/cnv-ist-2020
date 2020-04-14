@@ -3,11 +3,12 @@
 # BIT instrumentation
 echo "source $HOME/instrumentation/java-config-rnl-vm.sh" >> $HOME/.bashrc
 source $HOME/instrumentation/java-config-rnl-vm.sh
+echo "shopt -s globstar" >> $HOME/.bashrc
 shopt -s globstar # '**' will expand to more than one directory
 javac $HOME/instrumentation/**/*.java
 javac $HOME/webserver/**/solver/*.java
 mkdir -p $HOME/webserver-instrumented/pt/ulisboa/tecnico/cnv/solver
-java StatisticsTool -load_store  $HOME/webserver/pt/ulisboa/tecnico/cnv/solver $HOME/webserver-instrumented/pt/ulisboa/tecnico/cnv/solver
+java BasicBlocks  $HOME/webserver/pt/ulisboa/tecnico/cnv/solver $HOME/webserver-instrumented/pt/ulisboa/tecnico/cnv/solver
 javac $HOME/webserver/**/server/WebServer.java
 
 # Java server
