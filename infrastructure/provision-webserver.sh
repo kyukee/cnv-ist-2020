@@ -1,10 +1,11 @@
 #!/bin/bash
 
+# Classpath
+echo 'export CLASSPATH="$CLASSPATH:$HOME/webserver-instrumented:$HOME/webserver:$HOME/instrumentation:$HOME/instrumentation/bit-samples"' >> $HOME/.bashrc
+export CLASSPATH="$CLASSPATH:$HOME/webserver-instrumented:$HOME/webserver:$HOME/instrumentation:$HOME/instrumentation/bit-samples"
+
 # BIT instrumentation
-echo "source $HOME/instrumentation/java-config-rnl-vm.sh" >> $HOME/.bashrc
-source $HOME/instrumentation/java-config-rnl-vm.sh
-echo "shopt -s globstar" >> $HOME/.bashrc
-shopt -s globstar # '**' will expand to more than one directory
+shopt -s globstar       # '**' will expand to more than one directory
 javac $HOME/instrumentation/**/*.java
 javac $HOME/webserver/**/solver/*.java
 mkdir -p $HOME/webserver-instrumented/pt/ulisboa/tecnico/cnv/solver

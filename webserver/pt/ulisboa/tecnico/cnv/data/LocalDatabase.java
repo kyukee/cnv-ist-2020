@@ -4,8 +4,7 @@ import java.math.BigInteger;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-// central location in the server to save some temporary data before saving it to DynamoDB
-
+// used to save some temporary data (basic block count) before saving it to DynamoDB
 public class LocalDatabase {
 
     // basic blocks

@@ -6,7 +6,9 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.json.JSONArray;
 
+import pt.ulisboa.tecnico.cnv.data.AWSDynamoDBClient;
 import pt.ulisboa.tecnico.cnv.data.LocalDatabase;
+import pt.ulisboa.tecnico.cnv.data.dto.DynamoMetricsItem;
 import pt.ulisboa.tecnico.cnv.solver.Solver;
 import pt.ulisboa.tecnico.cnv.solver.SolverArgumentParser;
 import pt.ulisboa.tecnico.cnv.solver.SolverFactory;
@@ -22,10 +24,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
 public class WebServer {
+
+    private static AWSDynamoDBClient dynamoClient;
 
 	public static void main(final String[] args) throws Exception {
 
@@ -38,6 +43,8 @@ public class WebServer {
 		// be aware! infinite pool of threads!
 		server.setExecutor(Executors.newCachedThreadPool());
 		server.start();
+
+        dynamoClient = new AWSDynamoDBClient();
 
 		System.out.println("*******************************************************");
         System.out.println(new java.util.Date());
@@ -138,9 +145,14 @@ public class WebServer {
             os.close();
 
 
-            // TODO write to DynamoDB
 
 
+
+
+
+
+
+            System.out.println("> metrics: ");
 
             Map<String,String> paramsMap = new HashMap<String,String>();
 
@@ -149,15 +161,35 @@ public class WebServer {
                 paramsMap.put(splitParam[0], splitParam[1]);
 			}
 
-            System.out.println("> params: ");
             for (Map.Entry entry : paramsMap.entrySet()){
                 System.out.println("key: " + entry.getKey() + "; value: " + entry.getValue());
             }
 
             BigInteger bb_count = LocalDatabase.getBBCount(threadID);
-            System.out.println("> basic blocks: " + bb_count);
-            System.out.println("> Solution found in " + (elapsedTime*1e-6));
-            System.out.println("> threadID: " + threadID);
+
+            System.out.println("basic blocks: " + bb_count);
+            System.out.println("Solution found in " + (elapsedTime*1e-6));
+            System.out.println("threadID: " + threadID);
+
+
+
+
+
+
+            dynamoClient.writeMetrics(threadID, startTime, (elapsedTime*1e-6), bb_count, paramsMap.get("s"), paramsMap.get("un"), paramsMap.get("n1"), paramsMap.get("n2"), paramsMap.get("i"));
+
+
+
+
+            // TODO delete this. it's just a test
+            List<DynamoMetricsItem> result = dynamoClient.readMetrics(threadID);
+            for (DynamoMetricsItem item : result) {
+                System.out.println(item.toString());
+            }
+
+
+
+
 
 			System.out.println("> Sent response to " + t.getRemoteAddress().toString() + " with thread_id: " + Thread.currentThread().getId() + "\n");
 		}

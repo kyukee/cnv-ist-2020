@@ -6,4 +6,5 @@ export PATH=/usr/lib/jvm/java-7-openjdk-amd64/bin/:$PATH
 export SDK_HOME=/usr/lib/jvm/java-7-openjdk-amd64/
 export _JAVA_OPTIONS="-XX:-UseSplitVerifier "$_JAVA_OPTIONS
 
-export CLASSPATH="$CLASSPATH:$HOME/webserver-instrumented:$HOME/webserver:$HOME/instrumentation:$HOME/instrumentation/bit-samples"
+AWS_SDK_PATH="$HOME/aws-java-sdk/aws-*"
+export CLASSPATH="$CLASSPATH:$AWS_SDK_PATH/lib/aws-java-sdk-1.??.???.jar:$AWS_SDK_PATH/third-party/lib/*"

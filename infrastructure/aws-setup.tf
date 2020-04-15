@@ -30,7 +30,7 @@ data "aws_ami" "webserver-ami" {  // Based on: Amazon Linux 2 AMI (HVM), SSD Vol
 
     filter {
         name   = "tag:Name"
-        values = ["Packer-CNV-Webserver"] // defined in the corresponding packer ami definition file
+        values = ["Packer-CNV-Webserver-*"] // defined in the corresponding packer ami definition file
     }
 
     most_recent = true
@@ -68,6 +68,24 @@ resource "aws_security_group" "webserver-security" {
         protocol    = "-1"
         cidr_blocks = ["0.0.0.0/0"]
     }
+}
+
+resource "aws_dynamodb_table" "dynamodb-table-cnv-performance-metrics" {
+  name           = "CNV-project-metrics"
+  read_capacity  = 5
+  write_capacity = 5
+  hash_key       = "threadID"
+  range_key      = "startTime"
+
+  attribute {
+    name = "threadID"
+    type = "N"
+  }
+
+  attribute {
+    name = "startTime"
+    type = "N"
+  }
 }
 
 output "public_ip" {

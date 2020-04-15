@@ -1,5 +1,6 @@
 {
     "variables": {
+        "credentials_file": "{{env `CREDENTIALS_FILE`}}",
         "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
         "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
         "region": "us-east-1",
@@ -15,17 +16,29 @@
             "source_ami": "{{user `base_ami`}}",
             "instance_type": "t2.micro",
             "ssh_username": "{{user `ssh_username`}}",
-            "ami_name": "packer-cnv-project-jdk-1.7-{{timestamp}}",
+            "ami_name": "packer-cnv-project-base",
+            "force_deregister": "true",
+            "force_delete_snapshot": "true",
             "associate_public_ip_address": true,
             "tags": {
-                "Name": "Packer-CNV-JDK-1.7"
+                "Name": "Packer-CNV-Base-{{timestamp}}"
             }
         }
     ],
     "provisioners": [
         {
+            "type": "file",
+            "source": "./java-config-rnl-vm.sh",
+            "destination": "$HOME/"
+        },
+        {
+            "type": "file",
+            "source": "{{user `credentials_file`}}",
+            "destination": "$HOME/.aws/"
+        },
+        {
             "type": "shell",
-            "script": "./provision-jdk.sh"
+            "script": "./provision-base.sh"
         }
     ]
 }
