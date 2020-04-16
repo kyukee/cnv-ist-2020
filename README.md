@@ -39,6 +39,8 @@ Cloud Computing and Virtualization 2019-2020, 2nd semester project
 
 - **Warning** The provided AWS credentials file will be copied to the AWS instances and used by them for their work.
 
+  Also, if using AWS Educate credentials, pay attention to their expiration time.
+
 - Validate packer ami configuration file: (Mostly for developers)
 
       packer validate ami-<module>.json
@@ -78,7 +80,7 @@ Cloud Computing and Virtualization 2019-2020, 2nd semester project
 
     example:
 
-      curl ec2-3-227-244-216.compute-1.amazonaws.com:8000/sudoku?...
+      curl ec2-3-227-244-216.compute-1.amazonaws.com:8000/sudoku?s=BFS&un=81&n1=9&n2=9&i=SUDOKU_PUZZLE_9x19_101
 
 - look at the server logs
 

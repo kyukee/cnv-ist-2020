@@ -75,7 +75,7 @@ resource "aws_dynamodb_table" "dynamodb-table-cnv-performance-metrics" {
   read_capacity  = 5
   write_capacity = 5
   hash_key       = "threadID"
-  range_key      = "startTime"
+  range_key      = "startTimeMillis"
 
   attribute {
     name = "threadID"
@@ -83,7 +83,7 @@ resource "aws_dynamodb_table" "dynamodb-table-cnv-performance-metrics" {
   }
 
   attribute {
-    name = "startTime"
+    name = "startTimeMillis"
     type = "N"
   }
 }

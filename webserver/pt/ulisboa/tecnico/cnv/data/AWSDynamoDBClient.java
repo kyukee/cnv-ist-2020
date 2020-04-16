@@ -1,7 +1,10 @@
 package pt.ulisboa.tecnico.cnv.data;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import pt.ulisboa.tecnico.cnv.data.dto.DynamoMetricsItem;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
@@ -9,6 +12,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.regions.Regions;
 
 public class AWSDynamoDBClient {
@@ -41,14 +45,16 @@ public class AWSDynamoDBClient {
         mapper = new DynamoDBMapper(dynamoClient);
     }
 
-    public void writeMetrics(long threadID, long startTime, double elapsedTime, BigInteger basicBlocks, String strategy,
-            String max_unassigned_entries, String puzzle_lines, String puzzle_columns, String puzzle_name) {
+    public void writeMetrics(long threadID, long startTimeMillis, long elapsedTimeMillis, BigInteger basicBlocks, String strategy,
+            int max_unassigned_entries, int puzzle_lines, int puzzle_columns, String puzzle_name) {
 
         DynamoMetricsItem item = new DynamoMetricsItem();
 
         item.setThreadID(threadID);
-        item.setStartTime(startTime);
-        item.setElapsedTime(elapsedTime);
+        item.setStartTimeMillis(startTimeMillis);
+        item.setElapsedTimeMillis(elapsedTimeMillis);
+        Timestamp timestamp = new Timestamp(startTimeMillis);
+        item.setStartTimeReadable(timestamp.toString());
         item.setBasicBlocks(basicBlocks);
         item.setStrategy(strategy);
         item.setMax_unassigned_entries(max_unassigned_entries);
@@ -59,7 +65,8 @@ public class AWSDynamoDBClient {
         mapper.save(item);
     }
 
-    public List<DynamoMetricsItem> readMetrics(long threadID) {
+    // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBMapper.QueryScanExample.html
+    public List<DynamoMetricsItem> readMetrics(long threadID, long startTimeMillis) {
         DynamoMetricsItem item = new DynamoMetricsItem();
 
         DynamoMetricsItem partitionKey = new DynamoMetricsItem();
@@ -68,6 +75,15 @@ public class AWSDynamoDBClient {
 
         DynamoDBQueryExpression<DynamoMetricsItem> queryExpression = new DynamoDBQueryExpression<DynamoMetricsItem>()
                 .withHashKeyValues(partitionKey);
+
+
+        // syntax for more complex queries
+
+        // Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+        // eav.put(":val1", new AttributeValue().withN(startTimeMillis));
+        // DynamoDBQueryExpression<Reply> queryExpression = new DynamoDBQueryExpression<Reply>()
+        //         .withKeyConditionExpression("startTimeMillis = :val1").withExpressionAttributeValues(eav);
+
 
         List<DynamoMetricsItem> itemList = mapper.query(DynamoMetricsItem.class, queryExpression);
 

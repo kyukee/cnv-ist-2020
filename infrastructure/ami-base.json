@@ -32,9 +32,15 @@
             "destination": "$HOME/"
         },
         {
+            "type": "shell",
+            "inline": [
+                "mkdir $HOME/.aws"
+            ]
+        },
+        {
             "type": "file",
             "source": "{{user `credentials_file`}}",
-            "destination": "$HOME/.aws/"
+            "destination": "$HOME/.aws/credentials"
         },
         {
             "type": "shell",

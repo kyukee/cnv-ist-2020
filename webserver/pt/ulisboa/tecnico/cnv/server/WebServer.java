@@ -104,25 +104,14 @@ public class WebServer {
 				i++;
             }
 
-            final long startTime = System.nanoTime();
+            final long startTimeMillis = System.currentTimeMillis();
             JSONArray solution = SolverMain.solve(args);
-            final long elapsedTime = System.nanoTime() - startTime;
-
-			// // Get user-provided flags.
-			// final SolverArgumentParser ap = new SolverArgumentParser(args);
-
-			// // Create solver instance from factory.
-			// final Solver s = SolverFactory.getInstance().makeSolver(ap);
-
-			// //Solve sudoku puzzle
-			// JSONArray solution = s.solveSudoku();
-
+            final long elapsedTimeMillis = System.currentTimeMillis() - startTimeMillis;
 
 			// Send response to browser.
 			final Headers hdrs = t.getResponseHeaders();
 
             //t.sendResponseHeaders(200, responseFile.length());
-
 
 			///hdrs.add("Content-Type", "image/png");
             hdrs.add("Content-Type", "application/json");
@@ -144,14 +133,7 @@ public class WebServer {
 
             os.close();
 
-
-
-
-
-
-
-
-
+            // print metrics
             System.out.println("> metrics: ");
 
             Map<String,String> paramsMap = new HashMap<String,String>();
@@ -168,27 +150,26 @@ public class WebServer {
             BigInteger bb_count = LocalDatabase.getBBCount(threadID);
 
             System.out.println("basic blocks: " + bb_count);
-            System.out.println("Solution found in " + (elapsedTime*1e-6));
+            System.out.println("Solution found in " + elapsedTimeMillis);
             System.out.println("threadID: " + threadID);
 
+            // store metrics in dynamoDB
+
+            String strategy = paramsMap.get("s");
+            int undefined_entries = Integer.parseInt(paramsMap.get("un"));
+            int puzzle_lines = Integer.parseInt(paramsMap.get("n1"));
+            int puzzle_columns = Integer.parseInt(paramsMap.get("n2"));
+            String puzzle_name = paramsMap.get("i");
+
+            dynamoClient.writeMetrics(threadID, startTimeMillis, elapsedTimeMillis, bb_count, strategy, undefined_entries, puzzle_lines, puzzle_columns, puzzle_name);
+            System.out.println("Wrote metrics to dynamoDB");
 
 
-
-
-
-            dynamoClient.writeMetrics(threadID, startTime, (elapsedTime*1e-6), bb_count, paramsMap.get("s"), paramsMap.get("un"), paramsMap.get("n1"), paramsMap.get("n2"), paramsMap.get("i"));
-
-
-
-
-            // TODO delete this. it's just a test
-            List<DynamoMetricsItem> result = dynamoClient.readMetrics(threadID);
+            List<DynamoMetricsItem> result = dynamoClient.readMetrics(threadID, startTimeMillis);
+            System.out.println("> dynamoDB read response: ");
             for (DynamoMetricsItem item : result) {
                 System.out.println(item.toString());
             }
-
-
-
 
 
 			System.out.println("> Sent response to " + t.getRemoteAddress().toString() + " with thread_id: " + Thread.currentThread().getId() + "\n");

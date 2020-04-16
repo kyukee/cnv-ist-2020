@@ -11,13 +11,14 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 @DynamoDBTable(tableName = "CNV-project-metrics")
 public class DynamoMetricsItem {
     private long threadID;
-    private long startTime;
-    private double elapsedTime;
+    private long startTimeMillis;
+    private long elapsedTimeMillis;
+    private String startTimeReadable;
     private BigInteger basicBlocks;
     private String strategy;
-    private String max_unassigned_entries;
-    private String puzzle_lines;
-    private String puzzle_columns;
+    private int max_unassigned_entries;
+    private int puzzle_lines;
+    private int puzzle_columns;
     private String puzzle_name;
 
     @DynamoDBHashKey(attributeName = "threadID")
@@ -28,20 +29,28 @@ public class DynamoMetricsItem {
         this.threadID = threadID;
     }
 
-    @DynamoDBRangeKey(attributeName = "startTime")
-    public long getStartTime() {
-        return this.startTime;
+    @DynamoDBRangeKey(attributeName = "startTimeMillis")
+    public long getStartTimeMillis() {
+        return this.startTimeMillis;
     }
-    public void setStartTime(long startTime) {
-        this.startTime = startTime;
+    public void setStartTimeMillis(long startTimeMillis) {
+        this.startTimeMillis = startTimeMillis;
     }
 
-    @DynamoDBAttribute(attributeName = "elapsedTime")
-    public double getElapsedTime() {
-        return this.elapsedTime;
+    @DynamoDBAttribute(attributeName = "elapsedTimeMillis")
+    public long getElapsedTimeMillis() {
+        return this.elapsedTimeMillis;
     }
-    public void setElapsedTime(double elapsedTime) {
-        this.elapsedTime = elapsedTime;
+    public void setElapsedTimeMillis(long elapsedTimeMillis) {
+        this.elapsedTimeMillis = elapsedTimeMillis;
+    }
+
+    @DynamoDBAttribute(attributeName = "startTimeReadable")
+    public String getStartTimeReadable() {
+        return this.startTimeReadable;
+    }
+    public void setStartTimeReadable(String startTimeReadable) {
+        this.startTimeReadable = startTimeReadable;
     }
 
     @DynamoDBAttribute(attributeName = "basicBlocks")
@@ -61,26 +70,26 @@ public class DynamoMetricsItem {
     }
 
     @DynamoDBAttribute(attributeName = "max_unassigned_entries")
-    public String getMax_unassigned_entries() {
+    public int getMax_unassigned_entries() {
         return this.max_unassigned_entries;
     }
-    public void setMax_unassigned_entries(String max_unassigned_entries) {
+    public void setMax_unassigned_entries(int max_unassigned_entries) {
         this.max_unassigned_entries = max_unassigned_entries;
     }
 
     @DynamoDBAttribute(attributeName = "puzzle_lines")
-    public String getPuzzle_lines() {
+    public int getPuzzle_lines() {
         return this.puzzle_lines;
     }
-    public void setPuzzle_lines(String puzzle_lines) {
+    public void setPuzzle_lines(int puzzle_lines) {
         this.puzzle_lines = puzzle_lines;
     }
 
     @DynamoDBAttribute(attributeName = "puzzle_columns")
-    public String getPuzzle_columns() {
+    public int getPuzzle_columns() {
         return this.puzzle_columns;
     }
-    public void setPuzzle_columns(String puzzle_columns) {
+    public void setPuzzle_columns(int puzzle_columns) {
         this.puzzle_columns = puzzle_columns;
     }
 
@@ -96,7 +105,9 @@ public class DynamoMetricsItem {
     public String toString() {
         return "{" +
             " threadID='" + getThreadID() + "'" +
-            ", elapsedTime='" + getElapsedTime() + "'" +
+            ", startTimeMillis='" + getStartTimeMillis() + "'" +
+            ", elapsedTimeMillis='" + getElapsedTimeMillis() + "'" +
+            ", startTimeReadable='" + getStartTimeReadable() + "'" +
             ", basicBlocks='" + getBasicBlocks() + "'" +
             ", strategy='" + getStrategy() + "'" +
             ", max_unassigned_entries='" + getMax_unassigned_entries() + "'" +
