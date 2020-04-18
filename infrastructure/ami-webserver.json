@@ -42,6 +42,11 @@
         },
         {
             "type": "file",
+            "source": "../database-client",
+            "destination": "$HOME/database-client"
+        },
+        {
+            "type": "file",
             "source": "../instrumentation",
             "destination": "$HOME/instrumentation"
         },

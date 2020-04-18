@@ -6,9 +6,9 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.json.JSONArray;
 
-import pt.ulisboa.tecnico.cnv.data.AWSDynamoDBClient;
+import pt.ulisboa.tecnico.cnv.dynamo.AWSDynamoDBClient;
+import pt.ulisboa.tecnico.cnv.dynamo.dto.DynamoMetricsItem;
 import pt.ulisboa.tecnico.cnv.data.LocalDatabase;
-import pt.ulisboa.tecnico.cnv.data.dto.DynamoMetricsItem;
 import pt.ulisboa.tecnico.cnv.solver.Solver;
 import pt.ulisboa.tecnico.cnv.solver.SolverArgumentParser;
 import pt.ulisboa.tecnico.cnv.solver.SolverFactory;

@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cnv.data;
+package pt.ulisboa.tecnico.cnv.dynamo;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import pt.ulisboa.tecnico.cnv.data.dto.DynamoMetricsItem;
+import pt.ulisboa.tecnico.cnv.dynamo.dto.DynamoMetricsItem;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;

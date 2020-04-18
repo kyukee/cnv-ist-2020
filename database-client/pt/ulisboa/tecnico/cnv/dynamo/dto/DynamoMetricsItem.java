@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cnv.data.dto;
+package pt.ulisboa.tecnico.cnv.dynamo.dto;
 
 import java.math.BigInteger;
 
