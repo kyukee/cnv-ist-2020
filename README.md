@@ -74,15 +74,19 @@ Cloud Computing and Virtualization 2019-2020, 2nd semester project
 
 ## Usage and testing
 
-- make a request to a server
+When requesting from a **load balancer**, use port 80.
 
-      curl <server_public_dns>:8000/sudoku?s=<strategy>&un=<max_unassigned_entries>&n1=<puzzle_lines>&n2=<puzzle_columns>&i=<puzzle_name>
+When requesting directly from a **server**, use port 8000.
+
+- make a request
+
+      curl <public_dns>:8000/sudoku?s=<strategy>&un=<max_unassigned_entries>&n1=<puzzle_lines>&n2=<puzzle_columns>&i=<puzzle_name>
 
     example:
 
       curl ec2-3-227-244-216.compute-1.amazonaws.com:8000/sudoku?s=BFS&un=81&n1=9&n2=9&i=SUDOKU_PUZZLE_9x19_101
 
-- look at the server logs
+- look at the server logs (from home directory)
 
       tail -f logs/server.log
 

@@ -39,6 +39,7 @@ public class WebServer {
 		final HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
 
 		server.createContext("/sudoku", new MyHandler());
+        server.createContext("/health", new HealthHandler());
 
 		// be aware! infinite pool of threads!
 		server.setExecutor(Executors.newCachedThreadPool());
@@ -71,6 +72,7 @@ public class WebServer {
 
         return buf.toString();
     }
+
 	static class MyHandler implements HttpHandler {
 		@Override
 		public void handle(final HttpExchange t) throws IOException {
@@ -173,6 +175,17 @@ public class WebServer {
 
 
 			System.out.println("> Sent response to " + t.getRemoteAddress().toString() + " with thread_id: " + Thread.currentThread().getId() + "\n");
+		}
+    }
+
+    static class HealthHandler implements HttpHandler {
+		@Override
+		public void handle(final HttpExchange t) throws IOException {
+            String response = "This was the query:" + t.getRequestURI().getQuery() + "##";
+            t.sendResponseHeaders(200, response.length());
+            OutputStream os = t.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
 		}
 	}
 }
