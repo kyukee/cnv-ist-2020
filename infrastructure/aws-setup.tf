@@ -74,20 +74,6 @@ data "aws_ami" "webserver-ami" {  // Based on: Amazon Linux 2 AMI (HVM), SSD Vol
     most_recent = true
 }
 
-# resource "aws_instance" "webserver-instance" {
-#     count                  = 1
-#     ami                    = data.aws_ami.webserver-ami.id
-#     instance_type          = "t2.micro"
-#     availability_zone      = "us-east-1a"
-#     monitoring             = true
-#     vpc_security_group_ids = ["${aws_security_group.security-group.id}"]
-#     key_name               = var.ssh_key_pair_name
-
-#     tags = {
-#         Name = format("webserver-%03d", count.index + 1)
-#     }
-# }
-
 resource "aws_elb" "load_balancer_classic" {
   name               = "CNV-project-load-balancer"
   availability_zones = ["us-east-1a"]
@@ -206,8 +192,3 @@ output "public_dns" {
     value       = aws_elb.load_balancer_classic.dns_name
     description = "The public DNS of the application entry point"
 }
-
-# output "public_dns" {
-#     value       = "${aws_instance.webserver-instance[0].public_dns}"
-#     description = "The public DNS of a web server"
-# }
