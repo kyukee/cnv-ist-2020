@@ -105,3 +105,122 @@ Other relevant commands:
 - Destroy a specific resource
 
       terraform destroy -target <RESOURCE_TYPE.NAME>
+
+## Architecture description
+
+This project uses terraform to automatically deploy AWS infrastructure. All the infrastructure configuration can be seen in at **infrastructure/aws-setup.tf**.
+
+For the servers, we build a base AWS AMI with all the commom dependencies between the webserver, load balancer and auto scaler modules. Then each module gets its own AMI with its own code module.
+Some modules are used by several AMI's like the DynamoDB client.
+
+At this stage, for the checkpoint delivery, the load balancer and auto scaler being used are the default AWS ones.
+
+There is some code written for the load balancer module but it is not functional or being used by any servers.
+
+### Project structure
+
+This project follow the guide specification.
+
+The instrumentation we are using is the number of basic blocks.
+
+The instrumented classes write metrics to a Database class (in a Map) in the server and then the server reads the content of that class and writes it to DynamoDB.
+
+The load balancer can then read those metrics from DynamoDB and make its estimates.
+
+The DynamoDB client has been tested and is known to be able to write to DynamoDB, but there haven't been any reading tests yet, even though the code implements that feature.
+
+### Load balancer pseudocode
+```
+DEFAULT_ESTIMATE = ...
+MAX_SERVER_LOAD = ...
+
+List<Server> servers_list
+
+Server {
+	total_load
+	url
+	Map<id, ServerRequest>
+}
+
+ServerRequest {
+	query
+	query_estimate
+	start_time
+}
+
+Estimate {
+	load
+	duration
+}
+
+Estimate getEstimateFromMetrics(metrics_list):
+
+	load = average load from metrics_list
+	duration = average duration from metrics_list
+
+	estimate = new Estimate(load, duration)
+	return estimate
+
+Estimate estimateCost( Query query ):
+
+	metrics_list = MSS.get(query)
+
+	if (metrics_list is empty):
+		return DEFAULT_ESTIMATE
+
+	return getEstimateFromMetrics(metrics_list)
+
+Server getServerWithLowestLoad( Request request ):
+	min_load_server = server_list.getFirst
+	min_load = MAX_SERVER_LOAD
+
+	for each server in servers_list:
+		load = 0
+
+		for each server_request in server:
+
+			// check if request is finished, according to its estimate
+			start_time = server_request.start_time
+			current_time = get_current_time()
+			duration = server_request.estimate.duration
+
+			time_left = start_time + duration - current_time
+
+			if ( time_left > 0):
+				load += server_request.estimate.load
+
+		if (load < min_load_server):
+			min_load = load
+			min_load_server = server
+
+	return min_load_server
+
+void receiveRequest( Request client_request ):
+
+	// get query
+	query = client_request.getQuery()
+
+	estimate = estimateCost(query)
+
+	min_load_server = getServerWithLowestLoad()
+
+	// increase estimate if there already are queries running on the server
+	// given n = number of already running queries, the penalty increases by a factor of n squared
+	num_running_queries = min_load_server.requests.size()
+	estimate += num_running_queries * ESTIMATE_MULTI_QUERIES_PENALTY
+
+	// save request data in the load balancer
+	new_server_request = new ServerRequest(query, estimate, get_current_time())
+	min_load_server.requests.put(client_request.id, new_server_request)
+
+	// forward query to a server
+	response = server.url.send(query)
+
+	min_load_server.requests.delete(client_request.id)
+
+	return response
+```
+
+### Auto scaler pseudocode
+
+none
