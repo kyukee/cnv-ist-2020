@@ -1,0 +1,301 @@
+\documentclass[10pt,twocolumn]{article}
+
+\usepackage{fixltx2e}
+\usepackage{cuted}
+\usepackage{titling}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage{hyperref}
+% \usepackage{authblk}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{booktabs}
+
+\setlength{\droptitle}{-4em}      % Eliminate the default title vertical space
+\addtolength{\droptitle}{-100pt}   % Used for title adjustment
+
+\title{%\vspace{-40cm}
+Instituto Superior Técnico\\
+\huge Cloud Computing and Virtualization\\
+\Large Project Checkpoint\\
+\Huge Sudoku@Cloud\\
+\ \\
+\large Taguspark Group 36\\
+}
+
+\author{%
+    Iulian Puscasu\\
+    \texttt{87665}
+    \and
+    Raphaël Colcombet\\
+    \texttt{81957}
+}
+
+\date{
+    \today
+}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+With the goal of developing an elastic load balancing cluster of web servers, which is used to execute a computationally-intensive task,
+we designed an architecture that is capable of efficiently respond to a large number of concurrent requests, while also being very easy to
+deploy, configure, manage and destroy cloud resources by using configuration-as-code tools and principles.
+
+
+\section{Implementation}
+
+This project was designed to work with AWS cloud infrastructure, but the design principles can be applied for any type of system, whether it is
+cloud resources from another provider or private resources.
+
+Our implementation uses a modified Amazon Linux 2 AMI as a base for all of our nodes.
+The AMI is modified by adding some libraries used by all the modules, adding AWS credentials and provisioning by setting the java classpath and
+other relevant variables. By using a base AMI for shared configuration, we can reduce the amount of EBS storage utilized. To create the AMI
+specific to each module, we just copy and install the relevant code module.
+
+To automate all of this work configuring AMIs, we use \href{https://packer.io/}{Packer}.
+Then, we use \href{https://www.terraform.io/}{Terraform} to deploy all the infrastructure. This tool uses a configuration file where we specify
+all the configuration options we want, including the previously created AMIs.
+
+For the checkpoint delivery, we are using off-the-shelf Amazon AWS load balancer and auto scaler.
+Some non functional load balancer code is implemented. No auto balancer code is done.
+
+\section{Architecture}
+
+The system is organized into four main components:
+
+\subsection*{Web Servers}
+
+The webserver simply receives a query, computes the result and returns the result. What matters here is the following:
+
+\begin{itemize}
+    \item the queries can be very computationally intensive
+    \item queries have a varying level of complexity
+    \item there can be many simultaneous queries
+\end{itemize}
+
+\subsection*{Load Balancer}
+
+The load balancer is the entry point for the whole system, it receives queries from clients and forwards them to the most suitable server to handle
+that request. The load balancer is able to:
+
+\begin{itemize}
+    \item get metrics data from the MSS
+    \item estimate a query's complexity and duration
+    \item know what queries each worker is computing and the details of each of those queries
+\end{itemize}
+
+With all of these functionalities, the load balancer can compute what is the best worker to forward a request to, in a specific moment in time.
+
+\subsection*{Auto Scaler}
+
+The auto scaler has the ability of creating and destroying worker instances.
+It is constantly receiving data from the workers and if it detects that a certain metric stays above or below a certain threshhold
+the it will scale the size of the system accordingly.
+
+\subsection*{Metrics Storage System}
+
+The metrics storage system we are using is Amazon's DynamoDB. We write the metrics to a single table, where each query corresponds to a table entry.
+
+\section{Instrumentation}
+
+Regarding our approach to instrumentation, we are counting the number of basic blocks and we apply the instrumentation to every class in the solver package.
+The instrumentation class we use is located in the code at instrumentation/bit-samples/\textbf{BasicBlocks.java}
+
+We support concurrent queries by using a map where each thread has its own entry.
+At the start of each basic block, we increment the basic block count.
+
+The main solver class is specially instrumented because at the end of the main solving function, we add code to write the number of basic blocks to the server.
+Specifically, we write the data to the LocalDatabase class, located at webserver/pt/ulisboa/tecnico/cnv/data/ \textbf{LocalDatabase.java}.
+The server reads the data from a map in this class afterwards.
+
+\subsection{Experimental data}
+
+% Generated with https://www.tablesgenerator.com/
+
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+% \usepackage{graphicx}
+% \usepackage[table,xcdraw]{xcolor}
+% If you use beamer only pass "xcolor=table" option, i.e. \documentclass[xcolor=table]{beamer}
+\begin{table}[p]
+    \centering
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{@{}lllllllllllll@{}}
+    \toprule
+    {\color[HTML]{000000} }                                                               & {\color[HTML]{000000} }              & {\color[HTML]{000000} Icount}       & {\color[HTML]{000000} }             & {\color[HTML]{000000} StatisticsTool} & {\color[HTML]{000000} -load\_store} & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} -alloc} & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\ \midrule
+    {\color[HTML]{000000} params}                                                         & {\color[HTML]{000000} time (ms)}     & {\color[HTML]{000000} instructions} & {\color[HTML]{000000} basic blocks} & {\color[HTML]{000000} methods}        & {\color[HTML]{000000} field load}   & {\color[HTML]{000000} field store} & {\color[HTML]{000000} regular load} & {\color[HTML]{000000} regular store} & {\color[HTML]{000000} new}    & {\color[HTML]{000000} newarray} & {\color[HTML]{000000} anewarray} & {\color[HTML]{000000} multianewarray} \\ \midrule
+    {\color[HTML]{000000} }                                                               & {\color[HTML]{000000} }              & {\color[HTML]{000000} }             & {\color[HTML]{000000} }             & {\color[HTML]{000000} }               & {\color[HTML]{000000} }             & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} }       & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\
+    {\color[HTML]{000000} }                                                               & {\color[HTML]{000000} }              & {\color[HTML]{000000} }             & {\color[HTML]{000000} }             & {\color[HTML]{000000} }               & {\color[HTML]{000000} }             & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} }       & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\
+    {\color[HTML]{000000} {[}s=BFS, un=40, n1=9, n2=9, i=SUDOKU\_PUZZLE\_9x9\_101{]}}     & {\color[HTML]{000000} 13942.664968}  & {\color[HTML]{000000} 158517712}    & {\color[HTML]{000000} 67931256}     & {\color[HTML]{000000} 538}            & {\color[HTML]{000000} 1562}         & {\color[HTML]{000000} 7}           & {\color[HTML]{000000} 22657613}     & {\color[HTML]{000000} 22640896}      & {\color[HTML]{000000} 35}     & {\color[HTML]{000000} 0}        & {\color[HTML]{000000} 2}         & {\color[HTML]{000000} 1}              \\
+    {\color[HTML]{000000} {[}s=DLX, un=40, n1=9, n2=9, i=SUDOKU\_PUZZLE\_9x9\_101{]}}     & {\color[HTML]{000000} 46233.257012}  & {\color[HTML]{000000} 532691229}    & {\color[HTML]{000000} 226033469}    & {\color[HTML]{000000} 3365}           & {\color[HTML]{000000} 319702}       & {\color[HTML]{000000} 10363}       & {\color[HTML]{000000} 78829462}     & {\color[HTML]{000000} 75593698}      & {\color[HTML]{000000} 1009}   & {\color[HTML]{000000} 70}       & {\color[HTML]{000000} 1}         & {\color[HTML]{000000} 2}              \\
+    {\color[HTML]{000000} {[}s=CP, un=40, n1=9, n2=9, i=SUDOKU\_PUZZLE\_9x9\_101{]}}      & {\color[HTML]{000000} 10661.968626}  & {\color[HTML]{000000} 121463643}    & {\color[HTML]{000000} 52050945}     & {\color[HTML]{000000} 455}            & {\color[HTML]{000000} 1933}         & {\color[HTML]{000000} 7}           & {\color[HTML]{000000} 17360828}     & {\color[HTML]{000000} 17348362}      & {\color[HTML]{000000} 80}     & {\color[HTML]{000000} 0}        & {\color[HTML]{000000} 0}         & {\color[HTML]{000000} 1}              \\
+    {\color[HTML]{000000} }                                                               & {\color[HTML]{000000} }              & {\color[HTML]{000000} }             & {\color[HTML]{000000} }             & {\color[HTML]{000000} }               & {\color[HTML]{000000} }             & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} }       & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\
+    {\color[HTML]{000000} 9x9 – 81}                                                       & {\color[HTML]{000000} }              & {\color[HTML]{000000} }             & {\color[HTML]{000000} }             & {\color[HTML]{000000} }               & {\color[HTML]{000000} }             & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} }       & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\
+    {\color[HTML]{000000} {[}s=BFS, un=81, n1=9, n2=9, i=SUDOKU\_PUZZLE\_9x9\_101{]}}     & {\color[HTML]{000000} 24612.430407}  & {\color[HTML]{000000} 279979715}    & {\color[HTML]{000000} 119982415}    & {\color[HTML]{000000} 750}            & {\color[HTML]{000000} 2725}         & {\color[HTML]{000000} 7}           & {\color[HTML]{000000} 40019026}     & {\color[HTML]{000000} 39989018}      & {\color[HTML]{000000} 21}     & {\color[HTML]{000000} 0}        & {\color[HTML]{000000} 0}         & {\color[HTML]{000000} 1}              \\
+    {\color[HTML]{000000} {[}s=DLX, un=81, n1=9, n2=9, i=SUDOKU\_PUZZLE\_9x9\_101{]}}     & {\color[HTML]{000000} 48034.77761}   & {\color[HTML]{000000} 552845411}    & {\color[HTML]{000000} 234808699}    & {\color[HTML]{000000} 3387}           & {\color[HTML]{000000} 319974}       & {\color[HTML]{000000} 10504}       & {\color[HTML]{000000} 81576684}     & {\color[HTML]{000000} 78482802}      & {\color[HTML]{000000} 1021}   & {\color[HTML]{000000} 60}       & {\color[HTML]{000000} 1}         & {\color[HTML]{000000} 2}              \\
+    {\color[HTML]{000000} {[}s=CP, un=81, n1=9, n2=9, i=SUDOKU\_PUZZLE\_9x9\_101{]}}      & {\color[HTML]{000000} 21349.97692}   & {\color[HTML]{000000} 242918885}    & {\color[HTML]{000000} 104099873}    & {\color[HTML]{000000} 573}            & {\color[HTML]{000000} 3171}         & {\color[HTML]{000000} 7}           & {\color[HTML]{000000} 34718277}     & {\color[HTML]{000000} 34696386}      & {\color[HTML]{000000} 139}    & {\color[HTML]{000000} 0}        & {\color[HTML]{000000} 0}         & {\color[HTML]{000000} 1}              \\
+    {\color[HTML]{000000} }                                                               & {\color[HTML]{000000} }              & {\color[HTML]{000000} }             & {\color[HTML]{000000} }             & {\color[HTML]{000000} }               & {\color[HTML]{000000} }             & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} }       & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\
+    {\color[HTML]{000000} 16x16}                                                          & {\color[HTML]{000000} }              & {\color[HTML]{000000} }             & {\color[HTML]{000000} }             & {\color[HTML]{000000} }               & {\color[HTML]{000000} }             & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} }       & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\
+    {\color[HTML]{000000} {[}s=BFS, un=256, n1=16, n2=16, i=SUDOKU\_PUZZLE\_16x16\_01{]}} & {\color[HTML]{000000} 96864.427757}  & {\color[HTML]{000000} 1087036028}   & {\color[HTML]{000000} 465827028}    & {\color[HTML]{000000} 2430}           & {\color[HTML]{000000} 15173}        & {\color[HTML]{000000} 7}           & {\color[HTML]{000000} 155397993}    & {\color[HTML]{000000} 155250930}     & {\color[HTML]{000000} 28}     & {\color[HTML]{000000} 0}        & {\color[HTML]{000000} 0}         & {\color[HTML]{000000} 1}              \\
+    {\color[HTML]{000000} {[}s=DLX, un=256, n1=16, n2=16, i=SUDOKU\_PUZZLE\_16x16\_01{]}} & {\color[HTML]{000000} 148817.661942} & {\color[HTML]{000000} 1822662087}   & {\color[HTML]{000000} 743240409}    & {\color[HTML]{000000} 12387}          & {\color[HTML]{000000} 4912688}      & {\color[HTML]{000000} 34293}       & {\color[HTML]{000000} 306451892}    & {\color[HTML]{000000} 251872418}     & {\color[HTML]{000000} 3276}   & {\color[HTML]{000000} 203}      & {\color[HTML]{000000} 1}         & {\color[HTML]{000000} 2}              \\
+    {\color[HTML]{000000} {[}s=CP, un=256, n1=16, n2=16, i=SUDOKU\_PUZZLE\_16x16\_01{]}}  & {\color[HTML]{000000} 115752.591019} & {\color[HTML]{000000} 1317551065}   & {\color[HTML]{000000} 564613803}    & {\color[HTML]{000000} 2192}           & {\color[HTML]{000000} 22155}        & {\color[HTML]{000000} 7}           & {\color[HTML]{000000} 188317702}    & {\color[HTML]{000000} 188182707}     & {\color[HTML]{000000} 668}    & {\color[HTML]{000000} 0}        & {\color[HTML]{000000} 0}         & {\color[HTML]{000000} 1}              \\ \bottomrule
+    \end{tabular}%
+    }
+    \caption{Instrumentation data obtained from various instrumentation metrics}
+    \label{table:myTable1}
+\end{table}
+
+
+Please see Table ~\ref{table:myTable1}
+
+The metric that correlates the most to execution time is basic blocks, with a correlation of 0.999748567031058. (Table with correlation data will be available next delivery)
+
+All execution times across different instrumentation methods are very similar.
+Every test was done individually, using the t2.micro instance cpu at 100 percent usage.
+All execution times were considerably slower with instrumentation but different instrumentation methods only varied very slightly between themselves, even when only counting the number of methods.
+Therefore we will use basic blocks as a metric for server load, but we must be careful so the counter doesn’t overflow.
+
+\section{Data Structures}
+
+\subsection*{Web Servers and Instrumentation}
+
+The webservers only store a reference an instance of the dynamoDB client (AWSDynamoDBClient).
+Then they access the LocalDatabase class to get instrumentation metrics. The LocalDatabase class uses a map where the key is a threadID and the value
+is the number of basic blocks. This is essentially the same map as the one stored in the instrumentation class BasicBlocks.
+
+\subsection*{Load Balancer}
+
+The load balancer has a list of servers. For each server, we store the load, url and a map of queries.
+
+The key to the query map is is an HttpExchange hashCode and the value consists of an object with the query itself, an estimate for that query and its approximate start time.
+The estimate object contains an estimate for both load and duration of a query.
+
+\subsection*{Auto Scaler}
+
+The auto scaler has a list of worker nodes. For each worker, we know its current cpu and memory usage.
+
+\subsection*{Metrics Storage System}
+
+What we store in DynamoDB:
+
+\begin{itemize}
+    \setlength\itemsep{0em}
+    \item threadID
+    \item start time in milliseconds
+    \item elapsed time in milliseconds
+    \item start time in a readable format
+    \item number of basic blocks
+    \item solving strategy
+    \item max unassigned entries
+    \item puzzle lines
+    \item puzzle columns
+    \item puzzle name
+\end{itemize}
+
+There is a java DTO (data transfer object), used to communicate with DynamoDB: DynamoMetricsItem.
+
+\section{Algorithms}
+
+\subsection*{Auto Scaler}
+
+\begin{verbatim}
+    main_func:
+        for every server:
+            while true:
+                get cpu_usage
+                get memory_usage
+                wait(t)
+
+        if (cpu_usage > threshhold):
+
+            if (number_of_times_excedeed_cpu_threshhod > NUMBER_OF_TIMES_NEEDED)
+                scaleUp()
+                number_of_times_excedeed_cpu_threshhod = 0
+            else
+                number_of_times_excedeed_cpu_threshhod += 1
+
+        else if (cpu_usage < threshhold and number_of_times_excedeed_threshhod > NUMBER_OF_TIMES_NEEDED):
+
+            if (number_of_times_excedeed_memory_threshhod > NUMBER_OF_TIMES)
+                scaleUp()
+                number_of_times_excedeed_memory_threshhod = 0
+            else
+                number_of_times_excedeed_memory_threshhod += 1
+\end{verbatim}
+
+\subsection*{Load Balancer}
+
+\begin{verbatim}
+    Estimate getEstimateFromMetrics(metrics_list):
+
+        load = average load from metrics_list
+        duration = average duration from metrics_list
+
+        estimate = new Estimate(load, duration)
+        return estimate
+
+    Estimate estimateCost( Query query ):
+
+        metrics_list = MSS.get(query)
+
+        if (metrics_list is empty):
+            return DEFAULT_ESTIMATE
+
+        return getEstimateFromMetrics(metrics_list)
+
+    Server getServerWithLowestLoad( Request request ):
+        min_load_server = server_list.getFirst
+        min_load = MAX_SERVER_LOAD
+
+        for each server in servers_list:
+            load = 0
+
+            for each server_request in server:
+
+                // check if request is finished, according to its estimate
+                start_time = server_request.start_time
+                current_time = get_current_time()
+                duration = server_request.estimate.duration
+
+                time_left = start_time + duration - current_time
+
+                if ( time_left > 0):
+                    load += server_request.estimate.load
+
+            if (load < min_load_server):
+                min_load = load
+                min_load_server = server
+
+        return min_load_server
+
+    void receiveRequest( Request client_request ):
+
+        // get query
+        query = client_request.getQuery()
+
+        estimate = estimateCost(query)
+
+        min_load_server = getServerWithLowestLoad()
+
+        // increase estimate if there already are queries running on the server
+        // given n = number of already running queries, the penalty increases by a factor of n squared
+        num_running_queries = min_load_server.requests.size()
+        estimate += num_running_queries * ESTIMATE_MULTI_QUERIES_PENALTY
+
+        // save request data in the load balancer
+        new_server_request = new ServerRequest(query, estimate, get_current_time())
+        min_load_server.requests.put(client_request.id, new_server_request)
+
+        // forward query to a server
+        response = server.url.send(query)
+
+        min_load_server.requests.delete(client_request.id)
+
+        return response
+\end{verbatim}
+
+\end{document}
