@@ -45,6 +45,11 @@ Cloud Computing and Virtualization 2019-2020, 2nd semester project
 
       packer validate ami-<module>.json
 
+- Before building the webserver make sure you have the the necessary dependencies in webserver/org/json and webserver/org/apache. These are provided in the course page but can also be setup by running the following:
+
+      cd webserver
+      mvn clean compile
+
 - Create the AWS AMI's using Packer:
 
       packer build ami-base.json
@@ -130,97 +135,96 @@ The load balancer can then read those metrics from DynamoDB and make its estimat
 The DynamoDB client has been tested and is known to be able to write to DynamoDB, but there haven't been any reading tests yet, even though the code implements that feature.
 
 ### Load balancer pseudocode
-```
-DEFAULT_ESTIMATE = ...
-MAX_SERVER_LOAD = ...
 
-List<Server> servers_list
+    DEFAULT_ESTIMATE = ...
+    MAX_SERVER_LOAD = ...
 
-Server {
-	total_load
-	url
-	Map<id, ServerRequest>
-}
+    List<Server> servers_list
 
-ServerRequest {
-	query
-	query_estimate
-	start_time
-}
+    Server {
+        total_load
+        url
+        Map<id, ServerRequest>
+    }
 
-Estimate {
-	load
-	duration
-}
+    ServerRequest {
+        query
+        query_estimate
+        start_time
+    }
 
-Estimate getEstimateFromMetrics(metrics_list):
+    Estimate {
+        load
+        duration
+    }
 
-	load = average load from metrics_list
-	duration = average duration from metrics_list
+    Estimate getEstimateFromMetrics(metrics_list):
 
-	estimate = new Estimate(load, duration)
-	return estimate
+        load = average load from metrics_list
+        duration = average duration from metrics_list
 
-Estimate estimateCost( Query query ):
+        estimate = new Estimate(load, duration)
+        return estimate
 
-	metrics_list = MSS.get(query)
+    Estimate estimateCost( Query query ):
 
-	if (metrics_list is empty):
-		return DEFAULT_ESTIMATE
+        metrics_list = MSS.get(query)
 
-	return getEstimateFromMetrics(metrics_list)
+        if (metrics_list is empty):
+            return DEFAULT_ESTIMATE
 
-Server getServerWithLowestLoad( Request request ):
-	min_load_server = server_list.getFirst
-	min_load = MAX_SERVER_LOAD
+        return getEstimateFromMetrics(metrics_list)
 
-	for each server in servers_list:
-		load = 0
+    Server getServerWithLowestLoad( Request request ):
+        min_load_server = server_list.getFirst
+        min_load = MAX_SERVER_LOAD
 
-		for each server_request in server:
+        for each server in servers_list:
+            load = 0
 
-			// check if request is finished, according to its estimate
-			start_time = server_request.start_time
-			current_time = get_current_time()
-			duration = server_request.estimate.duration
+            for each server_request in server:
 
-			time_left = start_time + duration - current_time
+                // check if request is finished, according to its estimate
+                start_time = server_request.start_time
+                current_time = get_current_time()
+                duration = server_request.estimate.duration
 
-			if ( time_left > 0):
-				load += server_request.estimate.load
+                time_left = start_time + duration - current_time
 
-		if (load < min_load_server):
-			min_load = load
-			min_load_server = server
+                if ( time_left > 0):
+                    load += server_request.estimate.load
 
-	return min_load_server
+            if (load < min_load_server):
+                min_load = load
+                min_load_server = server
 
-void receiveRequest( Request client_request ):
+        return min_load_server
 
-	// get query
-	query = client_request.getQuery()
+    void receiveRequest( Request client_request ):
 
-	estimate = estimateCost(query)
+        // get query
+        query = client_request.getQuery()
 
-	min_load_server = getServerWithLowestLoad()
+        estimate = estimateCost(query)
 
-	// increase estimate if there already are queries running on the server
-	// given n = number of already running queries, the penalty increases by a factor of n squared
-	num_running_queries = min_load_server.requests.size()
-	estimate += num_running_queries * ESTIMATE_MULTI_QUERIES_PENALTY
+        min_load_server = getServerWithLowestLoad()
 
-	// save request data in the load balancer
-	new_server_request = new ServerRequest(query, estimate, get_current_time())
-	min_load_server.requests.put(client_request.id, new_server_request)
+        // increase estimate if there already are queries running on the server
+        // given n = number of already running queries, the penalty increases by a factor of n squared
+        num_running_queries = min_load_server.requests.size()
+        estimate += num_running_queries * ESTIMATE_MULTI_QUERIES_PENALTY
 
-	// forward query to a server
-	response = server.url.send(query)
+        // save request data in the load balancer
+        new_server_request = new ServerRequest(query, estimate, get_current_time())
+        min_load_server.requests.put(client_request.id, new_server_request)
 
-	min_load_server.requests.delete(client_request.id)
+        // forward query to a server
+        response = server.url.send(query)
 
-	return response
-```
+        min_load_server.requests.delete(client_request.id)
+
+        return response
 
 ### Auto scaler pseudocode
 
-none
+see report
