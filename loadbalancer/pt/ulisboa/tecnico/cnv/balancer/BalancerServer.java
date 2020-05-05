@@ -107,34 +107,38 @@ public class BalancerServer {
             // Headers requestHeaders = t.getRequestHeaders();
             // InputStream requestBody = t.getRequestBody();
 
+            String serverUrl = balancer.requestServer(query, t.hashCode());
 
-            // TODO change after requestSolve() is implemented
-            String serverUrl = balancer.requestServer(query);
+            // TODO what is actually inside 'query'?
+            // <public_dns>:8000/sudoku?s=<strategy>&un=<max_unassigned_entries>&n1=<puzzle_lines>&n2=<puzzle_columns>&i=<puzzle_name>
+            String redirected_query = serverUrl + ":8000/sudoku?" + query;
 
-            // TODO implement an http client
+            // forward query to a server
+            String response = HttpClient.sendGet(redirected_query);
 
-            // TODO forward response to client after connecting to server
-            // // Send response to browser.
-            // final Headers hdrs = t.getResponseHeaders();
+            // TODO delete completed requests
+            // min_load_server.requests.delete(client_request.id)
 
-            // hdrs.add("Content-Type", "application/json");
+            // Send response to browser.
+            final Headers hdrs = t.getResponseHeaders();
+            hdrs.add("Content-Type", "application/json");
 
-            // hdrs.add("Access-Control-Allow-Origin", "*");
+            hdrs.add("Access-Control-Allow-Origin", "*");
 
-            // hdrs.add("Access-Control-Allow-Credentials", "true");
-            // hdrs.add("Access-Control-Allow-Methods", "POST, GET, HEAD, OPTIONS");
-            // hdrs.add("Access-Control-Allow-Headers",
-            //         "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+            hdrs.add("Access-Control-Allow-Credentials", "true");
+            hdrs.add("Access-Control-Allow-Methods", "POST, GET, HEAD, OPTIONS");
+            hdrs.add("Access-Control-Allow-Headers",
+                    "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
 
-            // t.sendResponseHeaders(200, solution.toString().length());
+            t.sendResponseHeaders(200, response.length());
 
-            // final OutputStream os = t.getResponseBody();
-            // OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
-            // osw.write(solution.toString());
-            // osw.flush();
-            // osw.close();
+            final OutputStream os = t.getResponseBody();
+            OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
+            osw.write(response);
+            osw.flush();
+            osw.close();
 
-            // os.close();
+            os.close();
 
             System.out.println("> Sent response to " + t.getRemoteAddress().toString() + " with thread_id: "
                     + Thread.currentThread().getId() + "\n");

@@ -76,14 +76,24 @@ public class AWSDynamoDBClient {
         DynamoDBQueryExpression<DynamoMetricsItem> queryExpression = new DynamoDBQueryExpression<DynamoMetricsItem>()
                 .withHashKeyValues(partitionKey);
 
+        List<DynamoMetricsItem> itemList = mapper.query(DynamoMetricsItem.class, queryExpression);
 
-        // syntax for more complex queries
+        return itemList;
+    }
 
-        // Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
-        // eav.put(":val1", new AttributeValue().withN(startTimeMillis));
-        // DynamoDBQueryExpression<Reply> queryExpression = new DynamoDBQueryExpression<Reply>()
-        //         .withKeyConditionExpression("startTimeMillis = :val1").withExpressionAttributeValues(eav);
+    public List<DynamoMetricsItem> getMetricsFromQuery(String strategy, String max_unassigned_entries,
+            String puzzle_lines, String puzzle_columns, String puzzle_name) {
 
+        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+        eav.put(":val1", new AttributeValue().withS(strategy));
+        eav.put(":val2", new AttributeValue().withS(max_unassigned_entries));
+        eav.put(":val3", new AttributeValue().withS(puzzle_lines));
+        eav.put(":val4", new AttributeValue().withS(puzzle_columns));
+        eav.put(":val5", new AttributeValue().withS(puzzle_name));
+
+        DynamoDBQueryExpression<DynamoMetricsItem> queryExpression = new DynamoDBQueryExpression<DynamoMetricsItem>()
+                .withKeyConditionExpression("strategy = :val1 and max_unassigned_entries = :val2 and puzzle_lines = :val3 and puzzle_columns = :val4 and puzzle_name = :val5")
+                .withExpressionAttributeValues(eav);
 
         List<DynamoMetricsItem> itemList = mapper.query(DynamoMetricsItem.class, queryExpression);
 
