@@ -173,7 +173,7 @@ resource "aws_cloudwatch_metric_alarm" "scale_up_metric" {
 resource "aws_cloudwatch_metric_alarm" "scale_down_metric" {
   alarm_name          = "scaler-alarm-low-cpu"
   alarm_description = "This metric monitors ec2 cpu utilization"
-  alarm_actions     = ["${aws_autoscaling_policy.scale_up_policy.arn}"]
+  alarm_actions     = ["${aws_autoscaling_policy.scale_down_policy.arn}"]
 
   namespace           = "AWS/AutoScaling"
   period              = "60"  // measured in seconds

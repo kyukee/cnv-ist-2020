@@ -116,8 +116,7 @@ public class BalancerServer {
             // forward query to a server
             String response = HttpClient.sendGet(redirected_query);
 
-            // TODO delete completed requests
-            // min_load_server.requests.delete(client_request.id)
+            balancer.deleteRequest(serverUrl, t.hashCode());
 
             // Send response to browser.
             final Headers hdrs = t.getResponseHeaders();
@@ -154,7 +153,6 @@ public class BalancerServer {
             // Get the query.
             final String query = t.getRequestURI().getQuery();
             System.out.println("> Query:\t" + query + " with thread_id:" + threadID);
-
 
             // Break it down into String[].
             final String[] params = query.split("&");

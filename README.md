@@ -45,7 +45,7 @@ Cloud Computing and Virtualization 2019-2020, 2nd semester project
 
       packer validate ami-<module>.json
 
-- Before building the webserver make sure you have the the necessary dependencies in webserver/org/json and webserver/org/apache. These are provided in the course page but can also be setup by running the following:
+- Before building the webserver make sure you have the the necessary dependencies in webserver/org/json and webserver/org/apache. These are provided in the course page but can also be downloaded loacally by running the following:
 
       cd webserver
       mvn clean compile
@@ -77,6 +77,13 @@ Cloud Computing and Virtualization 2019-2020, 2nd semester project
 
       terraform apply
 
+### Terminal setup - Quickstart
+
+What variables do you need if you already have a credentials file:
+
+    export CREDENTIALS_FILE="$HOME/.aws/credentials"
+    export TF_VAR_ssh_key_pair_name=CNV-2020-project-educate.pem
+
 ## Usage and testing
 
 When requesting from a **load balancer**, use port 80.
@@ -89,7 +96,7 @@ When requesting directly from a **server**, use port 8000.
 
     example:
 
-      curl ec2-3-227-244-216.compute-1.amazonaws.com:8000/sudoku?s=BFS&un=81&n1=9&n2=9&i=SUDOKU_PUZZLE_9x19_101
+      curl http://ec2-3-227-244-216.compute-1.amazonaws.com:8000/sudoku?s=BFS&un=81&n1=9&n2=9&i=SUDOKU_PUZZLE_9x19_101
 
 - look at the server logs (from home directory)
 

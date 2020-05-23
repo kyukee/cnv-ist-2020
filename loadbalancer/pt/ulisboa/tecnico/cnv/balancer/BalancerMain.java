@@ -172,8 +172,13 @@ public class BalancerMain {
         new_server_request.start_time = System.currentTimeMillis();
 
         min_load_server.running_queries.put(queryHash, new_server_request);
+        // min_load_server.total_load += estimate.load;
 
         return min_load_server.url;
+    }
+
+    public void deleteRequest(String url, int queryHash) {
+        serverList.get(url).running_queries.remove(queryHash);
     }
 
     // TODO implement periodic health check using HealthParameters
