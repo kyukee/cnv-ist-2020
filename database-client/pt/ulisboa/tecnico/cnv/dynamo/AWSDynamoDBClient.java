@@ -12,6 +12,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.regions.Regions;
 
@@ -81,21 +82,26 @@ public class AWSDynamoDBClient {
         return itemList;
     }
 
-    public List<DynamoMetricsItem> getMetricsFromQuery(String strategy, String max_unassigned_entries,
-            String puzzle_lines, String puzzle_columns, String puzzle_name) {
+    public List<DynamoMetricsItem> getMetricsFromQuery(String strategy, String max_unassigned_entries, String puzzle_lines, String puzzle_columns, String puzzle_name) {
 
         Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
         eav.put(":val1", new AttributeValue().withS(strategy));
-        eav.put(":val2", new AttributeValue().withS(max_unassigned_entries));
-        eav.put(":val3", new AttributeValue().withS(puzzle_lines));
-        eav.put(":val4", new AttributeValue().withS(puzzle_columns));
+        eav.put(":val2", new AttributeValue().withN(max_unassigned_entries));
+        eav.put(":val3", new AttributeValue().withN(puzzle_lines));
+        eav.put(":val4", new AttributeValue().withN(puzzle_columns));
         eav.put(":val5", new AttributeValue().withS(puzzle_name));
 
-        DynamoDBQueryExpression<DynamoMetricsItem> queryExpression = new DynamoDBQueryExpression<DynamoMetricsItem>()
-                .withKeyConditionExpression("strategy = :val1 and max_unassigned_entries = :val2 and puzzle_lines = :val3 and puzzle_columns = :val4 and puzzle_name = :val5")
+        System.out.println("getMetricsFromQuery - eav: " + eav);
+
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression("strategy = :val1 and max_unassigned_entries = :val2 and puzzle_lines = :val3 and puzzle_columns = :val4 and puzzle_name = :val5")
                 .withExpressionAttributeValues(eav);
 
-        List<DynamoMetricsItem> itemList = mapper.query(DynamoMetricsItem.class, queryExpression);
+        System.out.println("getMetricsFromQuery - queryExpression: " + scanExpression);
+
+        List<DynamoMetricsItem> itemList = mapper.scan(DynamoMetricsItem.class, scanExpression);
+
+        System.out.println("getMetricsFromQuery - itemList: " + itemList);
 
         return itemList;
     }

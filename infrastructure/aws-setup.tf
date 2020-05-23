@@ -17,6 +17,13 @@ resource "aws_security_group" "security-group" {
     }
 
     ingress {
+        from_port   = 8080
+        to_port     = 8080
+        protocol    = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    ingress {
         from_port   = 80
         to_port     = 80
         protocol    = "tcp"
@@ -69,6 +76,22 @@ data "aws_ami" "webserver-ami" {  // Based on: Amazon Linux 2 AMI (HVM), SSD Vol
     filter {
         name   = "tag:Name"
         values = ["Packer-CNV-Webserver-*"] // defined in the corresponding packer ami definition file
+    }
+
+    most_recent = true
+}
+
+data "aws_ami" "loadbalancer-ami" {
+    owners = ["self"]
+
+    filter {
+        name   = "state"
+        values = ["available"]
+    }
+
+    filter {
+        name   = "tag:Name"
+        values = ["Packer-CNV-LoadBalancer-*"] // defined in the corresponding packer ami definition file
     }
 
     most_recent = true
@@ -188,7 +211,26 @@ resource "aws_cloudwatch_metric_alarm" "scale_down_metric" {
   }
 }
 
+resource "aws_instance" "loadbalancer-instance" {
+    count                  = 1
+    ami                    = data.aws_ami.loadbalancer-ami.id
+    instance_type          = "t2.micro"
+    availability_zone      = "us-east-1a"
+    monitoring             = true
+    vpc_security_group_ids = ["${aws_security_group.security-group.id}"]
+    key_name               = var.ssh_key_pair_name
+
+    tags = {
+        Name = format("loadbalancer-%03d", count.index + 1)
+    }
+}
+
 output "public_dns" {
     value       = aws_elb.load_balancer_classic.dns_name
-    description = "The public DNS of the application entry point"
+    description = "The public DNS of the application entry point (AWS)"
+}
+
+output "public_dns_custom" {
+    value       = "${aws_instance.loadbalancer-instance[0].public_dns}"
+    description = "The public DNS of custom load balancer instance"
 }

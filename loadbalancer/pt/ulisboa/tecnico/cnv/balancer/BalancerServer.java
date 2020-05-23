@@ -26,31 +26,65 @@ public class BalancerServer {
 
     private static BalancerMain balancer;
 
-    private static final int instance_port = 80;
+    private static final int instance_port = 8080;
 
     // TODO consider using redirects instead
     private static class HttpClient{
-        public static String sendGet(String url) throws IOException {
-            BufferedReader reader = null;
-            StringBuilder stringBuilder;
+        // public static String sendGet(String url) throws IOException {
+        //     BufferedReader reader = null;
+        //     StringBuilder stringBuilder;
 
-            HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
-            httpClient.setRequestMethod("GET");
+        //     HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
+        //     httpClient.setRequestMethod("GET");
 
-            // give it 15 seconds to respond
-            httpClient.setReadTimeout(15 * 1000);
-            httpClient.connect();
+        //     // give it 15 seconds to respond
+        //     httpClient.setReadTimeout(15 * 1000);
+        //     // httpClient.connect();
 
-            // read the output from the server
-            reader = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
-            stringBuilder = new StringBuilder();
+        //     // read the output from the server
+        //     reader = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
+        //     stringBuilder = new StringBuilder();
 
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                stringBuilder.append(line + "\n");
+        //     String line = null;
+        //     while ((line = reader.readLine()) != null) {
+        //         stringBuilder.append(line + "\n");
+        //     }
+        //     return stringBuilder.toString();
+        // }
+
+        private static String sendPOST(String url, String body) throws IOException {
+            URL obj = new URL(url);
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.setRequestMethod("POST");
+            con.setRequestProperty("User-Agent", "Mozilla/5.0");
+
+            // For POST only - START
+            con.setDoOutput(true);
+            OutputStream os = con.getOutputStream();
+            os.write(body.getBytes());
+            os.flush();
+            os.close();
+            // For POST only - END
+
+            int responseCode = con.getResponseCode();
+            System.out.println("POST Response Code :: " + responseCode);
+
+            if (responseCode == HttpURLConnection.HTTP_OK) { // success
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                return response.toString();
+            } else {
+                return "POST request not worked";
             }
-            return stringBuilder.toString();
         }
+
     }
 
     public static void main(final String[] args) throws Exception {
@@ -109,12 +143,18 @@ public class BalancerServer {
 
             String serverUrl = balancer.requestServer(query, t.hashCode());
 
-            // TODO what is actually inside 'query'?
+            System.out.println("> Redirecting to server:\t" + serverUrl);
+
+            // query content: "s=<strategy>&un=<max_unassigned_entries>&n1=<puzzle_lines>&n2=<puzzle_columns>&i=<puzzle_name>"
             // <public_dns>:8000/sudoku?s=<strategy>&un=<max_unassigned_entries>&n1=<puzzle_lines>&n2=<puzzle_columns>&i=<puzzle_name>
-            String redirected_query = serverUrl + ":8000/sudoku?" + query;
+            String redirected_query = "http://" + serverUrl + ":8000/sudoku?" + query;
+
+            System.out.println("> Redirect url:\t" + redirected_query);
 
             // forward query to a server
-            String response = HttpClient.sendGet(redirected_query);
+            String response = HttpClient.sendPOST(redirected_query, parseRequestBody(t.getRequestBody()));
+
+            System.out.println("> Redirect url response:\t" + response);
 
             balancer.deleteRequest(serverUrl, t.hashCode());
 

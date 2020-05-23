@@ -1,0 +1,58 @@
+{
+    "variables": {
+        "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+        "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+        "region": "us-east-1",
+        "ssh_username": "ec2-user"
+    },
+    "builders": [
+        {
+            "type": "amazon-ebs",
+            "access_key": "{{user `aws_access_key`}}",
+            "secret_key": "{{user `aws_secret_key` }}",
+            "region": "{{user `region` }}",
+            "source_ami": "{{user `base_ami`}}",
+            "instance_type": "t2.micro",
+            "ssh_username": "{{user `ssh_username`}}",
+            "ami_name": "packer-cnv-project-loadbalancer",
+            "force_deregister": "true",
+            "force_delete_snapshot": "true",
+            "associate_public_ip_address": true,
+            "tags": {
+                "Name": "Packer-CNV-LoadBalancer-{{timestamp}}"
+            },
+            "source_ami_filter": {
+                "filters": {
+                    "virtualization-type": "hvm",
+                    "name": "packer-cnv-project-base",
+                    "root-device-type": "ebs"
+                },
+                "owners": [
+                    "self"
+                ],
+                "most_recent": true
+            }
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "file",
+            "source": "../loadbalancer",
+            "destination": "$HOME/loadbalancer"
+        },
+        {
+            "type": "file",
+            "source": "../webserver/org",
+            "destination": "$HOME/loadbalancer/org"
+        },
+        {
+            "type": "file",
+            "source": "../database-client",
+            "destination": "$HOME/database-client"
+        },
+        {
+            "type": "shell",
+            "script": "./provision-loadbalancer.sh"
+        }
+    ]
+}

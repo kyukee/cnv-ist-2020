@@ -54,8 +54,8 @@ Cloud Computing and Virtualization 2019-2020, 2nd semester project
 
       packer build ami-base.json
       packer build ami-webserver.json
-      packer build ami-scaler.json
-      packer build ami-balancer.json
+      packer build ami-autoscaler.json
+      packer build ami-loadbalancer.json
 
 ### Terraform - Deploying the Infrastructure
 
@@ -79,14 +79,16 @@ Cloud Computing and Virtualization 2019-2020, 2nd semester project
 
 ### Terminal setup - Quickstart
 
-What variables do you need if you already have a credentials file:
+What variables do you need to export if you already have a credentials file:
 
     export CREDENTIALS_FILE="$HOME/.aws/credentials"
-    export TF_VAR_ssh_key_pair_name=CNV-2020-project-educate.pem
+    export TF_VAR_ssh_key_pair_name=CNV-2020-project-educate
 
 ## Usage and testing
 
-When requesting from a **load balancer**, use port 80.
+When requesting from an AWS **load balancer**, use port 80.
+
+When requesting from our implemented **load balancer**, use port 8080.
 
 When requesting directly from a **server**, use port 8000.
 
@@ -97,6 +99,12 @@ When requesting directly from a **server**, use port 8000.
     example:
 
       curl http://ec2-3-227-244-216.compute-1.amazonaws.com:8000/sudoku?s=BFS&un=81&n1=9&n2=9&i=SUDOKU_PUZZLE_9x19_101
+
+- add a worker to the loadbalancer
+
+    example:
+
+      curl "http://ec2-54-91-167-45.compute-1.amazonaws.com:8080/addserver?dns=ec2-34-203-209-70.compute-1.amazonaws.com"
 
 - look at the server logs (from home directory)
 

@@ -107,6 +107,7 @@ public class WebServer {
             }
 
             final long startTimeMillis = System.currentTimeMillis();
+            System.out.println("SolverMain args: " + Arrays.toString(args));
             JSONArray solution = SolverMain.solve(args);
             final long elapsedTimeMillis = System.currentTimeMillis() - startTimeMillis;
 

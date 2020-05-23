@@ -92,6 +92,8 @@ public class BalancerMain {
     public Estimate estimateCost( String query ){
         Map<String, String> paramsMap = queryToMap(query);
 
+        System.out.println("Params map: " + paramsMap);
+
         String strategy = paramsMap.get("s");
         String max_unassigned_entries = paramsMap.get("un");
         String puzzle_lines = paramsMap.get("n1");
@@ -100,6 +102,8 @@ public class BalancerMain {
 
         List<DynamoMetricsItem> metrics_list = dynamoClient.getMetricsFromQuery(strategy, max_unassigned_entries,
             puzzle_lines, puzzle_columns, puzzle_name);
+
+        System.out.println("Received metrics from dynamo");
 
         if (metrics_list.isEmpty()){
             Estimate defaultEstimate = new Estimate();
@@ -153,12 +157,21 @@ public class BalancerMain {
 
     public String requestServer(String query, int queryHash) throws IOException {
 
+        System.out.println("Load balancer - start");
+
         Estimate estimate = estimateCost(query);
+
+        System.out.println("Load balancer - estimate:" + estimate);
+
         WebServer min_load_server = getServerWithLowestLoad();
+
+        System.out.println("Load balancer - min load server:" + min_load_server);
 
         if (min_load_server == null){
             throw new IOException("No servers available");
         }
+
+        System.out.println("Load balancer - min load server url:" + min_load_server.url);
 
         // increase estimate if there already are queries running on the server
         int num_running_queries = min_load_server.running_queries.size();
