@@ -151,6 +151,7 @@ resource "aws_autoscaling_group" "auto_scaler" {
   load_balancers            = [aws_elb.load_balancer_classic.id]
   health_check_type         = "ELB"
   health_check_grace_period = 60
+  default_cooldown          = 60
   enabled_metrics           = [ "GroupMinSize", "GroupMaxSize", "GroupInServiceInstances", "GroupPendingInstances",
                                 "GroupStandbyInstances", "GroupTerminatingInstances", "GroupTotalInstances" ]
 
@@ -163,7 +164,7 @@ resource "aws_autoscaling_policy" "scale_up_policy" {
   name                   = "CNV-project-scale-up-policy"
   scaling_adjustment     = 1
   adjustment_type        = "ChangeInCapacity"
-  cooldown               = 300
+  cooldown               = 60
   autoscaling_group_name = aws_autoscaling_group.auto_scaler.name
 }
 
@@ -171,7 +172,7 @@ resource "aws_autoscaling_policy" "scale_down_policy" {
   name                   = "CNV-project-scale-down-policy"
   scaling_adjustment     = -1
   adjustment_type        = "ChangeInCapacity"
-  cooldown               = 300
+  cooldown               = 60
   autoscaling_group_name = aws_autoscaling_group.auto_scaler.name
 }
 
@@ -180,13 +181,13 @@ resource "aws_cloudwatch_metric_alarm" "scale_up_metric" {
   alarm_description = "This metric monitors ec2 cpu utilization"
   alarm_actions     = ["${aws_autoscaling_policy.scale_up_policy.arn}"]
 
-  namespace           = "AWS/AutoScaling"
+  namespace           = "AWS/EC2"
   period              = "60"  // measured in seconds
   evaluation_periods  = "1"
   metric_name         = "CPUUtilization"
   statistic           = "Average"
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  threshold           = "80"
+  threshold           = "60"
 
   dimensions = {
     AutoScalingGroupName = "${aws_autoscaling_group.auto_scaler.name}"
@@ -198,13 +199,13 @@ resource "aws_cloudwatch_metric_alarm" "scale_down_metric" {
   alarm_description = "This metric monitors ec2 cpu utilization"
   alarm_actions     = ["${aws_autoscaling_policy.scale_down_policy.arn}"]
 
-  namespace           = "AWS/AutoScaling"
+  namespace           = "AWS/EC2"
   period              = "60"  // measured in seconds
   evaluation_periods  = "1"
   metric_name         = "CPUUtilization"
   statistic           = "Average"
   comparison_operator = "LessThanOrEqualToThreshold"
-  threshold           = "20"
+  threshold           = "40"
 
   dimensions = {
     AutoScalingGroupName = "${aws_autoscaling_group.auto_scaler.name}"
