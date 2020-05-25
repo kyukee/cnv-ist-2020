@@ -44,15 +44,6 @@ public class BalancerMain {
         long duration;
     }
 
-    private static final class HealthParameters {
-        private static final int healthy_threshold = 2;
-        private static final int unhealthy_threshold = 5;
-        private static final int timeout = 5;
-        private static final int interval = 30;
-        private static final int target_port = 8000;
-        private static final String target_endpoint = "/health";
-    }
-
     public BalancerMain(){
         dynamoClient = new AWSDynamoDBClient();
         serverList = new HashMap<String, WebServer>();
@@ -192,11 +183,6 @@ public class BalancerMain {
 
     public void deleteRequest(String url, int queryHash) {
         serverList.get(url).running_queries.remove(queryHash);
-    }
-
-    // TODO implement periodic health check using HealthParameters
-    public void healthCheck() {
-
     }
 
     public int addServer(List<String> urls) {

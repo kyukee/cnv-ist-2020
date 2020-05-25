@@ -242,4 +242,36 @@ The DynamoDB client has been tested and is known to be able to write to DynamoDB
 
 ### Auto scaler pseudocode
 
-see report
+    init():
+        repeat initial_size times:
+            createNewServer()
+
+    main():
+        repeat every x seconds:
+
+            average_cpu = 0
+            n_active_servers = 0
+
+            for every webserver_url:
+
+                cpu = webserver_url.getServerCPUusage()
+
+                if cpu == request_timeout:
+
+                    webserver.n_timeouts++
+
+                    if n_timeouts > max_timeouts:
+                        deleteServer()
+                        createNewServer()
+                else
+                    average_cpu += cpu
+                    n_active_servers++
+                    webserver.n_timeouts = 0
+
+            average_cpu = average_cpu / n_active_servers
+
+            if average_cpu > cpu_scale_up_treshhold && n_servers < max_size:
+                scaleUp()
+
+            if average_cpu < cpu_scale_down_treshhold && n_servers > min_size:
+                scaleDown()

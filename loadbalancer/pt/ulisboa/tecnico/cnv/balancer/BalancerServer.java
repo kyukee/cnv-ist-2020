@@ -28,29 +28,7 @@ public class BalancerServer {
 
     private static final int instance_port = 8080;
 
-    // TODO consider using redirects instead
     private static class HttpClient{
-        // public static String sendGet(String url) throws IOException {
-        //     BufferedReader reader = null;
-        //     StringBuilder stringBuilder;
-
-        //     HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
-        //     httpClient.setRequestMethod("GET");
-
-        //     // give it 15 seconds to respond
-        //     httpClient.setReadTimeout(15 * 1000);
-        //     // httpClient.connect();
-
-        //     // read the output from the server
-        //     reader = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
-        //     stringBuilder = new StringBuilder();
-
-        //     String line = null;
-        //     while ((line = reader.readLine()) != null) {
-        //         stringBuilder.append(line + "\n");
-        //     }
-        //     return stringBuilder.toString();
-        // }
 
         private static String sendPOST(String url, String body) throws IOException {
             URL obj = new URL(url);
