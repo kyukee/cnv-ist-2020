@@ -206,8 +206,8 @@ public class AutoScalerMain {
 
             RunInstancesResult runInstancesResult = ec2.runInstances(runInstancesRequest);
 
-            // wait for dns
-            Thread.sleep(10000);
+            // wait for dns name
+            Thread.sleep(1000 * 30);
 
             Instance instance = runInstancesResult.getReservation().getInstances().get(0);
 
@@ -216,7 +216,7 @@ public class AutoScalerMain {
 
             System.out.println("started instance id = " + newInstanceId + ",  dns = " + newInstanceDNS);
 
-            // HttpClient.sendGet(loadBalancerDNS + "/addserver?dns=" + newInstanceDNS);
+            HttpClient.sendGet(loadBalancerDNS + "/addserver?dns=" + newInstanceDNS);
         } catch (AmazonServiceException ase) {
             System.out.println("Caught Exception: " + ase.getMessage());
             System.out.println("Reponse Status Code: " + ase.getStatusCode());
@@ -392,11 +392,11 @@ public class AutoScalerMain {
         for (int i = 0; i < SCALE_DOWN_ADJUSTMENT; i++) {
             Instance lowestLoad = getLowestLoadInstance();
             terminateInstance(lowestLoad.getInstanceId());
-            // try {
-            //     HttpClient.sendGet(loadBalancerDNS + "/removeserver?dns=" + lowestLoad.getPublicDnsName());
-            // } catch (Exception e) {
-            //     e.printStackTrace();
-            // }
+            try {
+                HttpClient.sendGet(loadBalancerDNS + "/removeserver?dns=" + lowestLoad.getPublicDnsName());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
