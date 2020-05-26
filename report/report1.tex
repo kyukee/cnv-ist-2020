@@ -6,10 +6,13 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage{graphicx}
+\usepackage{color, colortbl}
 \usepackage{hyperref}
 % \usepackage{authblk}
 \usepackage[table,xcdraw]{xcolor}
 \usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{minted}
 
 \setlength{\droptitle}{-4em}      % Eliminate the default title vertical space
 \addtolength{\droptitle}{-100pt}   % Used for title adjustment
@@ -17,7 +20,7 @@
 \title{%\vspace{-40cm}
 Instituto Superior Técnico\\
 \huge Cloud Computing and Virtualization\\
-\Large Project Checkpoint\\
+\Large Final Delivery\\
 \Huge Sudoku@Cloud\\
 \ \\
 \large Taguspark Group 36\\
@@ -57,8 +60,15 @@ To automate all of this work configuring AMIs, we use \href{https://packer.io/}{
 Then, we use \href{https://www.terraform.io/}{Terraform} to deploy all the infrastructure. This tool uses a configuration file where we specify
 all the configuration options we want, including the previously created AMIs.
 
-For the checkpoint delivery, we are using off-the-shelf Amazon AWS load balancer and auto scaler.
-Some non functional load balancer code is implemented. No auto balancer code is done.
+For the final delivery, we are using our own implementation of an autoscaler and a loadbalancer.
+
+Things like autoscaling policy and load balancer settings can be changed in the respective files, by changing some static variables at the top of the files.
+
+Regarding a problem in the submitted code:
+There was a problem in the auto scaler. When a new instance is created, it takes some time for it to change its status to 'running'.
+This is a problem because the instance needs to be registered into the load balancer, but that cant be done until the instance is running.
+Since we cant predict when the instance will start, I just deleted the part of the code that does the load balancer registration and
+thought that this will work if the instance is registered manually into the load balancer.
 
 \section{Architecture}
 
@@ -113,40 +123,6 @@ The server reads the data from a map in this class afterwards.
 
 % Generated with https://www.tablesgenerator.com/
 
-% Please add the following required packages to your document preamble:
-% \usepackage{booktabs}
-% \usepackage{graphicx}
-% \usepackage[table,xcdraw]{xcolor}
-% If you use beamer only pass "xcolor=table" option, i.e. \documentclass[xcolor=table]{beamer}
-\begin{table}[p]
-    \centering
-    \resizebox{\textwidth}{!}{%
-    \begin{tabular}{@{}lllllllllllll@{}}
-    \toprule
-    {\color[HTML]{000000} }                                                               & {\color[HTML]{000000} }              & {\color[HTML]{000000} Icount}       & {\color[HTML]{000000} }             & {\color[HTML]{000000} StatisticsTool} & {\color[HTML]{000000} -load\_store} & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} -alloc} & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\ \midrule
-    {\color[HTML]{000000} params}                                                         & {\color[HTML]{000000} time (ms)}     & {\color[HTML]{000000} instructions} & {\color[HTML]{000000} basic blocks} & {\color[HTML]{000000} methods}        & {\color[HTML]{000000} field load}   & {\color[HTML]{000000} field store} & {\color[HTML]{000000} regular load} & {\color[HTML]{000000} regular store} & {\color[HTML]{000000} new}    & {\color[HTML]{000000} newarray} & {\color[HTML]{000000} anewarray} & {\color[HTML]{000000} multianewarray} \\ \midrule
-    {\color[HTML]{000000} }                                                               & {\color[HTML]{000000} }              & {\color[HTML]{000000} }             & {\color[HTML]{000000} }             & {\color[HTML]{000000} }               & {\color[HTML]{000000} }             & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} }       & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\
-    {\color[HTML]{000000} }                                                               & {\color[HTML]{000000} }              & {\color[HTML]{000000} }             & {\color[HTML]{000000} }             & {\color[HTML]{000000} }               & {\color[HTML]{000000} }             & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} }       & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\
-    {\color[HTML]{000000} {[}s=BFS, un=40, n1=9, n2=9, i=SUDOKU\_PUZZLE\_9x9\_101{]}}     & {\color[HTML]{000000} 13942.664968}  & {\color[HTML]{000000} 158517712}    & {\color[HTML]{000000} 67931256}     & {\color[HTML]{000000} 538}            & {\color[HTML]{000000} 1562}         & {\color[HTML]{000000} 7}           & {\color[HTML]{000000} 22657613}     & {\color[HTML]{000000} 22640896}      & {\color[HTML]{000000} 35}     & {\color[HTML]{000000} 0}        & {\color[HTML]{000000} 2}         & {\color[HTML]{000000} 1}              \\
-    {\color[HTML]{000000} {[}s=DLX, un=40, n1=9, n2=9, i=SUDOKU\_PUZZLE\_9x9\_101{]}}     & {\color[HTML]{000000} 46233.257012}  & {\color[HTML]{000000} 532691229}    & {\color[HTML]{000000} 226033469}    & {\color[HTML]{000000} 3365}           & {\color[HTML]{000000} 319702}       & {\color[HTML]{000000} 10363}       & {\color[HTML]{000000} 78829462}     & {\color[HTML]{000000} 75593698}      & {\color[HTML]{000000} 1009}   & {\color[HTML]{000000} 70}       & {\color[HTML]{000000} 1}         & {\color[HTML]{000000} 2}              \\
-    {\color[HTML]{000000} {[}s=CP, un=40, n1=9, n2=9, i=SUDOKU\_PUZZLE\_9x9\_101{]}}      & {\color[HTML]{000000} 10661.968626}  & {\color[HTML]{000000} 121463643}    & {\color[HTML]{000000} 52050945}     & {\color[HTML]{000000} 455}            & {\color[HTML]{000000} 1933}         & {\color[HTML]{000000} 7}           & {\color[HTML]{000000} 17360828}     & {\color[HTML]{000000} 17348362}      & {\color[HTML]{000000} 80}     & {\color[HTML]{000000} 0}        & {\color[HTML]{000000} 0}         & {\color[HTML]{000000} 1}              \\
-    {\color[HTML]{000000} }                                                               & {\color[HTML]{000000} }              & {\color[HTML]{000000} }             & {\color[HTML]{000000} }             & {\color[HTML]{000000} }               & {\color[HTML]{000000} }             & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} }       & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\
-    {\color[HTML]{000000} 9x9 – 81}                                                       & {\color[HTML]{000000} }              & {\color[HTML]{000000} }             & {\color[HTML]{000000} }             & {\color[HTML]{000000} }               & {\color[HTML]{000000} }             & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} }       & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\
-    {\color[HTML]{000000} {[}s=BFS, un=81, n1=9, n2=9, i=SUDOKU\_PUZZLE\_9x9\_101{]}}     & {\color[HTML]{000000} 24612.430407}  & {\color[HTML]{000000} 279979715}    & {\color[HTML]{000000} 119982415}    & {\color[HTML]{000000} 750}            & {\color[HTML]{000000} 2725}         & {\color[HTML]{000000} 7}           & {\color[HTML]{000000} 40019026}     & {\color[HTML]{000000} 39989018}      & {\color[HTML]{000000} 21}     & {\color[HTML]{000000} 0}        & {\color[HTML]{000000} 0}         & {\color[HTML]{000000} 1}              \\
-    {\color[HTML]{000000} {[}s=DLX, un=81, n1=9, n2=9, i=SUDOKU\_PUZZLE\_9x9\_101{]}}     & {\color[HTML]{000000} 48034.77761}   & {\color[HTML]{000000} 552845411}    & {\color[HTML]{000000} 234808699}    & {\color[HTML]{000000} 3387}           & {\color[HTML]{000000} 319974}       & {\color[HTML]{000000} 10504}       & {\color[HTML]{000000} 81576684}     & {\color[HTML]{000000} 78482802}      & {\color[HTML]{000000} 1021}   & {\color[HTML]{000000} 60}       & {\color[HTML]{000000} 1}         & {\color[HTML]{000000} 2}              \\
-    {\color[HTML]{000000} {[}s=CP, un=81, n1=9, n2=9, i=SUDOKU\_PUZZLE\_9x9\_101{]}}      & {\color[HTML]{000000} 21349.97692}   & {\color[HTML]{000000} 242918885}    & {\color[HTML]{000000} 104099873}    & {\color[HTML]{000000} 573}            & {\color[HTML]{000000} 3171}         & {\color[HTML]{000000} 7}           & {\color[HTML]{000000} 34718277}     & {\color[HTML]{000000} 34696386}      & {\color[HTML]{000000} 139}    & {\color[HTML]{000000} 0}        & {\color[HTML]{000000} 0}         & {\color[HTML]{000000} 1}              \\
-    {\color[HTML]{000000} }                                                               & {\color[HTML]{000000} }              & {\color[HTML]{000000} }             & {\color[HTML]{000000} }             & {\color[HTML]{000000} }               & {\color[HTML]{000000} }             & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} }       & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\
-    {\color[HTML]{000000} 16x16}                                                          & {\color[HTML]{000000} }              & {\color[HTML]{000000} }             & {\color[HTML]{000000} }             & {\color[HTML]{000000} }               & {\color[HTML]{000000} }             & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} }       & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\
-    {\color[HTML]{000000} {[}s=BFS, un=256, n1=16, n2=16, i=SUDOKU\_PUZZLE\_16x16\_01{]}} & {\color[HTML]{000000} 96864.427757}  & {\color[HTML]{000000} 1087036028}   & {\color[HTML]{000000} 465827028}    & {\color[HTML]{000000} 2430}           & {\color[HTML]{000000} 15173}        & {\color[HTML]{000000} 7}           & {\color[HTML]{000000} 155397993}    & {\color[HTML]{000000} 155250930}     & {\color[HTML]{000000} 28}     & {\color[HTML]{000000} 0}        & {\color[HTML]{000000} 0}         & {\color[HTML]{000000} 1}              \\
-    {\color[HTML]{000000} {[}s=DLX, un=256, n1=16, n2=16, i=SUDOKU\_PUZZLE\_16x16\_01{]}} & {\color[HTML]{000000} 148817.661942} & {\color[HTML]{000000} 1822662087}   & {\color[HTML]{000000} 743240409}    & {\color[HTML]{000000} 12387}          & {\color[HTML]{000000} 4912688}      & {\color[HTML]{000000} 34293}       & {\color[HTML]{000000} 306451892}    & {\color[HTML]{000000} 251872418}     & {\color[HTML]{000000} 3276}   & {\color[HTML]{000000} 203}      & {\color[HTML]{000000} 1}         & {\color[HTML]{000000} 2}              \\
-    {\color[HTML]{000000} {[}s=CP, un=256, n1=16, n2=16, i=SUDOKU\_PUZZLE\_16x16\_01{]}}  & {\color[HTML]{000000} 115752.591019} & {\color[HTML]{000000} 1317551065}   & {\color[HTML]{000000} 564613803}    & {\color[HTML]{000000} 2192}           & {\color[HTML]{000000} 22155}        & {\color[HTML]{000000} 7}           & {\color[HTML]{000000} 188317702}    & {\color[HTML]{000000} 188182707}     & {\color[HTML]{000000} 668}    & {\color[HTML]{000000} 0}        & {\color[HTML]{000000} 0}         & {\color[HTML]{000000} 1}              \\ \bottomrule
-    \end{tabular}%
-    }
-    \caption{Instrumentation data obtained from various instrumentation metrics}
-    \label{table:myTable1}
-\end{table}
-
-
 Please see Table ~\ref{table:myTable1}
 
 The metric that correlates the most to execution time is basic blocks, with a correlation of 0.999748567031058. (Table with correlation data will be available next delivery)
@@ -173,7 +149,7 @@ The estimate object contains an estimate for both load and duration of a query.
 
 \subsection*{Auto Scaler}
 
-The auto scaler has a list of worker nodes. For each worker, we know its current cpu and memory usage.
+The autoscaler does not have save any data. It just uses data it gets from running queries with a ec2 client.
 
 \subsection*{Metrics Storage System}
 
@@ -195,104 +171,183 @@ What we store in DynamoDB:
 
 There is a java DTO (data transfer object), used to communicate with DynamoDB: DynamoMetricsItem.
 
+\section{Fault-Tolerance}
+
+I did not have time to work on this aspect of the project.
+
 \section{Algorithms}
+
+\subsection*{Request Cost Estimation}
+
+To create an estimate, we search dynamoDB for previous similar requests. If they are found, we simply
+take the average of each metric as an estimate. If no previous executions of that request are found, we
+just use a default value. This default value increases based on how many requests are running at the time.
 
 \subsection*{Auto Scaler}
 
-\begin{verbatim}
-    main_func:
-        for every server:
-            while true:
-                get cpu_usage
-                get memory_usage
-                wait(t)
+\begin{minted}
+[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+fontsize=\footnotesize,
+linenos,
+breaklines,
+autogobble
+]
+{java}
+init:
+    if num_running_instances > 0
+        do (INITIAL_SIZE - num_running_instances) times
+            launchInstance();
 
-        if (cpu_usage > threshhold):
+main():
+    repeat every x seconds:
 
-            if (number_of_times_excedeed_cpu_threshhod > NUMBER_OF_TIMES_NEEDED)
-                scaleUp()
-                number_of_times_excedeed_cpu_threshhod = 0
+        average_cpu = 0
+        n_active_servers = 0
+
+        for every webserver:
+
+            cpu = webserver.getServerCPUusage()
+
+            if cpu == request_timeout:
+
+                webserver.n_timeouts++
+
+                if n_timeouts > max_timeouts:
+                    deleteServer()
+                    createNewServer()
             else
-                number_of_times_excedeed_cpu_threshhod += 1
+                average_cpu += cpu
+                n_active_servers++
+                webserver.n_timeouts = 0
 
-        else if (cpu_usage < threshhold and number_of_times_excedeed_threshhod > NUMBER_OF_TIMES_NEEDED):
+        average_cpu = average_cpu / n_active_servers
 
-            if (number_of_times_excedeed_memory_threshhod > NUMBER_OF_TIMES)
-                scaleUp()
-                number_of_times_excedeed_memory_threshhod = 0
-            else
-                number_of_times_excedeed_memory_threshhod += 1
-\end{verbatim}
+        if average_cpu > cpu_scale_up_treshhold && n_servers < max_size:
+            scaleUp()
+
+        if average_cpu < cpu_scale_down_treshhold && n_servers > min_size:
+            scaleDown()
+\end{minted}
 
 \subsection*{Load Balancer}
 
-\begin{verbatim}
-    Estimate getEstimateFromMetrics(metrics_list):
+\begin{minted}
+[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+fontsize=\footnotesize,
+linenos,
+breaklines,
+autogobble,
+xleftmargin=10pt
+]
+{java}
+void main( Request client_request ):
 
-        load = average load from metrics_list
-        duration = average duration from metrics_list
+    // get query
+    query = client_request.getQuery()
 
-        estimate = new Estimate(load, duration)
-        return estimate
+    estimate = estimateCost(query)
 
-    Estimate estimateCost( Query query ):
+    min_load_server = getServerWithLowestLoad()
 
-        metrics_list = MSS.get(query)
+    // increase estimate if there already are queries running on the server
+    // given n = number of already running queries, the penalty increases by a factor of n squared
+    num_running_queries = min_load_server.requests.size()
+    estimate += num_running_queries * ESTIMATE_MULTI_QUERIES_PENALTY
 
-        if (metrics_list is empty):
-            return DEFAULT_ESTIMATE
+    // save request data in the load balancer
+    new_server_request = new ServerRequest(query, estimate, get_current_time())
+    min_load_server.requests.put(client_request.id, new_server_request)
 
-        return getEstimateFromMetrics(metrics_list)
+    // forward query to a server
+    response = server.url.send(query)
 
-    Server getServerWithLowestLoad( Request request ):
-        min_load_server = server_list.getFirst
-        min_load = MAX_SERVER_LOAD
+    min_load_server.requests.delete(client_request.id)
 
-        for each server in servers_list:
-            load = 0
+    return response
 
-            for each server_request in server:
+Estimate getEstimateFromMetrics(metrics_list):
 
-                // check if request is finished, according to its estimate
-                start_time = server_request.start_time
-                current_time = get_current_time()
-                duration = server_request.estimate.duration
+    load = average load from metrics_list
+    duration = average duration from metrics_list
 
-                time_left = start_time + duration - current_time
+    estimate = new Estimate(load, duration)
+    return estimate
 
-                if ( time_left > 0):
-                    load += server_request.estimate.load
+Estimate estimateCost( Query query ):
 
-            if (load < min_load_server):
-                min_load = load
-                min_load_server = server
+    metrics_list = MSS.get(query)
 
-        return min_load_server
+    if (metrics_list is empty):
+        return DEFAULT_ESTIMATE
 
-    void receiveRequest( Request client_request ):
+    return getEstimateFromMetrics(metrics_list)
 
-        // get query
-        query = client_request.getQuery()
+Server getServerWithLowestLoad( Request request ):
+    min_load_server = server_list.getFirst
+    min_load = MAX_SERVER_LOAD
 
-        estimate = estimateCost(query)
+    for each server in servers_list:
+        load = 0
 
-        min_load_server = getServerWithLowestLoad()
+        for each server_request in server:
 
-        // increase estimate if there already are queries running on the server
-        // given n = number of already running queries, the penalty increases by a factor of n squared
-        num_running_queries = min_load_server.requests.size()
-        estimate += num_running_queries * ESTIMATE_MULTI_QUERIES_PENALTY
+            // check if request is finished, according to its estimate
+            start_time = server_request.start_time
+            current_time = get_current_time()
+            duration = server_request.estimate.duration
 
-        // save request data in the load balancer
-        new_server_request = new ServerRequest(query, estimate, get_current_time())
-        min_load_server.requests.put(client_request.id, new_server_request)
+            time_left = start_time + duration - current_time
 
-        // forward query to a server
-        response = server.url.send(query)
+            if ( time_left > 0):
+                load += server_request.estimate.load
 
-        min_load_server.requests.delete(client_request.id)
+        if (load < min_load_server):
+            min_load = load
+            min_load_server = server
 
-        return response
-\end{verbatim}
+    return min_load_server
+\end{minted}
+
+\clearpage
+
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+% \usepackage{graphicx}
+% \usepackage[table,xcdraw]{xcolor}
+% If you use beamer only pass "xcolor=table" option, i.e. \documentclass[xcolor=table]{beamer}
+\begin{table}[p]
+    \centering
+    % \rowcolors{3}{gray!50! white!40! }{}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{@{}lllllllllllll@{}}
+    \toprule
+    {\color[HTML]{000000} }                                                               & {\color[HTML]{000000} }              & {\color[HTML]{000000} Icount}       & {\color[HTML]{000000} }             & {\color[HTML]{000000} StatisticsTool} & {\color[HTML]{000000} -load\_store} & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} -alloc} & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\ \midrule
+    {\color[HTML]{000000} params}                                                         & {\color[HTML]{000000} time (ms)}     & {\color[HTML]{000000} instructions} & {\color[HTML]{000000} basic blocks} & {\color[HTML]{000000} methods}        & {\color[HTML]{000000} field load}   & {\color[HTML]{000000} field store} & {\color[HTML]{000000} regular load} & {\color[HTML]{000000} regular store} & {\color[HTML]{000000} new}    & {\color[HTML]{000000} newarray} & {\color[HTML]{000000} anewarray} & {\color[HTML]{000000} multianewarray} \\ \midrule
+    {\color[HTML]{000000} }                                                               & {\color[HTML]{000000} }              & {\color[HTML]{000000} }             & {\color[HTML]{000000} }             & {\color[HTML]{000000} }               & {\color[HTML]{000000} }             & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} }       & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\
+    {\color[HTML]{000000} }                                                               & {\color[HTML]{000000} }              & {\color[HTML]{000000} }             & {\color[HTML]{000000} }             & {\color[HTML]{000000} }               & {\color[HTML]{000000} }             & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} }       & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\
+    {\color[HTML]{000000} {[}s=BFS, un=40, n1=9, n2=9, i=SUDOKU\_PUZZLE\_9x9\_101{]}}     & {\color[HTML]{000000} 13942.664968}  & {\color[HTML]{000000} 158517712}    & {\color[HTML]{000000} 67931256}     & {\color[HTML]{000000} 538}            & {\color[HTML]{000000} 1562}         & {\color[HTML]{000000} 7}           & {\color[HTML]{000000} 22657613}     & {\color[HTML]{000000} 22640896}      & {\color[HTML]{000000} 35}     & {\color[HTML]{000000} 0}        & {\color[HTML]{000000} 2}         & {\color[HTML]{000000} 1}              \\
+    {\color[HTML]{000000} {[}s=DLX, un=40, n1=9, n2=9, i=SUDOKU\_PUZZLE\_9x9\_101{]}}     & {\color[HTML]{000000} 46233.257012}  & {\color[HTML]{000000} 532691229}    & {\color[HTML]{000000} 226033469}    & {\color[HTML]{000000} 3365}           & {\color[HTML]{000000} 319702}       & {\color[HTML]{000000} 10363}       & {\color[HTML]{000000} 78829462}     & {\color[HTML]{000000} 75593698}      & {\color[HTML]{000000} 1009}   & {\color[HTML]{000000} 70}       & {\color[HTML]{000000} 1}         & {\color[HTML]{000000} 2}              \\
+    {\color[HTML]{000000} {[}s=CP, un=40, n1=9, n2=9, i=SUDOKU\_PUZZLE\_9x9\_101{]}}      & {\color[HTML]{000000} 10661.968626}  & {\color[HTML]{000000} 121463643}    & {\color[HTML]{000000} 52050945}     & {\color[HTML]{000000} 455}            & {\color[HTML]{000000} 1933}         & {\color[HTML]{000000} 7}           & {\color[HTML]{000000} 17360828}     & {\color[HTML]{000000} 17348362}      & {\color[HTML]{000000} 80}     & {\color[HTML]{000000} 0}        & {\color[HTML]{000000} 0}         & {\color[HTML]{000000} 1}              \\
+    {\color[HTML]{000000} }                                                               & {\color[HTML]{000000} }              & {\color[HTML]{000000} }             & {\color[HTML]{000000} }             & {\color[HTML]{000000} }               & {\color[HTML]{000000} }             & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} }       & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\
+    {\color[HTML]{000000} 9x9 – 81}                                                       & {\color[HTML]{000000} }              & {\color[HTML]{000000} }             & {\color[HTML]{000000} }             & {\color[HTML]{000000} }               & {\color[HTML]{000000} }             & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} }       & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\
+    {\color[HTML]{000000} {[}s=BFS, un=81, n1=9, n2=9, i=SUDOKU\_PUZZLE\_9x9\_101{]}}     & {\color[HTML]{000000} 24612.430407}  & {\color[HTML]{000000} 279979715}    & {\color[HTML]{000000} 119982415}    & {\color[HTML]{000000} 750}            & {\color[HTML]{000000} 2725}         & {\color[HTML]{000000} 7}           & {\color[HTML]{000000} 40019026}     & {\color[HTML]{000000} 39989018}      & {\color[HTML]{000000} 21}     & {\color[HTML]{000000} 0}        & {\color[HTML]{000000} 0}         & {\color[HTML]{000000} 1}              \\
+    {\color[HTML]{000000} {[}s=DLX, un=81, n1=9, n2=9, i=SUDOKU\_PUZZLE\_9x9\_101{]}}     & {\color[HTML]{000000} 48034.77761}   & {\color[HTML]{000000} 552845411}    & {\color[HTML]{000000} 234808699}    & {\color[HTML]{000000} 3387}           & {\color[HTML]{000000} 319974}       & {\color[HTML]{000000} 10504}       & {\color[HTML]{000000} 81576684}     & {\color[HTML]{000000} 78482802}      & {\color[HTML]{000000} 1021}   & {\color[HTML]{000000} 60}       & {\color[HTML]{000000} 1}         & {\color[HTML]{000000} 2}              \\
+    {\color[HTML]{000000} {[}s=CP, un=81, n1=9, n2=9, i=SUDOKU\_PUZZLE\_9x9\_101{]}}      & {\color[HTML]{000000} 21349.97692}   & {\color[HTML]{000000} 242918885}    & {\color[HTML]{000000} 104099873}    & {\color[HTML]{000000} 573}            & {\color[HTML]{000000} 3171}         & {\color[HTML]{000000} 7}           & {\color[HTML]{000000} 34718277}     & {\color[HTML]{000000} 34696386}      & {\color[HTML]{000000} 139}    & {\color[HTML]{000000} 0}        & {\color[HTML]{000000} 0}         & {\color[HTML]{000000} 1}              \\
+    {\color[HTML]{000000} }                                                               & {\color[HTML]{000000} }              & {\color[HTML]{000000} }             & {\color[HTML]{000000} }             & {\color[HTML]{000000} }               & {\color[HTML]{000000} }             & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} }       & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\
+    {\color[HTML]{000000} 16x16}                                                          & {\color[HTML]{000000} }              & {\color[HTML]{000000} }             & {\color[HTML]{000000} }             & {\color[HTML]{000000} }               & {\color[HTML]{000000} }             & {\color[HTML]{000000} }            & {\color[HTML]{000000} }             & {\color[HTML]{000000} }              & {\color[HTML]{000000} }       & {\color[HTML]{000000} }         & {\color[HTML]{000000} }          & {\color[HTML]{000000} }               \\
+    {\color[HTML]{000000} {[}s=BFS, un=256, n1=16, n2=16, i=SUDOKU\_PUZZLE\_16x16\_01{]}} & {\color[HTML]{000000} 96864.427757}  & {\color[HTML]{000000} 1087036028}   & {\color[HTML]{000000} 465827028}    & {\color[HTML]{000000} 2430}           & {\color[HTML]{000000} 15173}        & {\color[HTML]{000000} 7}           & {\color[HTML]{000000} 155397993}    & {\color[HTML]{000000} 155250930}     & {\color[HTML]{000000} 28}     & {\color[HTML]{000000} 0}        & {\color[HTML]{000000} 0}         & {\color[HTML]{000000} 1}              \\
+    {\color[HTML]{000000} {[}s=DLX, un=256, n1=16, n2=16, i=SUDOKU\_PUZZLE\_16x16\_01{]}} & {\color[HTML]{000000} 148817.661942} & {\color[HTML]{000000} 1822662087}   & {\color[HTML]{000000} 743240409}    & {\color[HTML]{000000} 12387}          & {\color[HTML]{000000} 4912688}      & {\color[HTML]{000000} 34293}       & {\color[HTML]{000000} 306451892}    & {\color[HTML]{000000} 251872418}     & {\color[HTML]{000000} 3276}   & {\color[HTML]{000000} 203}      & {\color[HTML]{000000} 1}         & {\color[HTML]{000000} 2}              \\
+    {\color[HTML]{000000} {[}s=CP, un=256, n1=16, n2=16, i=SUDOKU\_PUZZLE\_16x16\_01{]}}  & {\color[HTML]{000000} 115752.591019} & {\color[HTML]{000000} 1317551065}   & {\color[HTML]{000000} 564613803}    & {\color[HTML]{000000} 2192}           & {\color[HTML]{000000} 22155}        & {\color[HTML]{000000} 7}           & {\color[HTML]{000000} 188317702}    & {\color[HTML]{000000} 188182707}     & {\color[HTML]{000000} 668}    & {\color[HTML]{000000} 0}        & {\color[HTML]{000000} 0}         & {\color[HTML]{000000} 1}              \\ \bottomrule
+    \end{tabular}%
+    }
+    \caption{Instrumentation data obtained from various instrumentation metrics}
+    \label{table:myTable1}
+\end{table}%
 
 \end{document}
